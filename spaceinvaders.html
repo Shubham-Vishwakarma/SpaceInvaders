@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex;">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script>
+        var missiles = [];
+        var missileAppender = 0;
+
+        var currentX = window.innerWidth/2;
+        var currentY = window.innerHeight/2;
+        var currentAngle = 0;
+
+        const canvas = document.getElementById("canvas");
+        const context = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const ship = new Ship(canvas, currentX, currentY, currentAngle);
+        //ship.draw();
+            
+        setInterval(function(){
+            context.clearRect(0,0, canvas.width, canvas.height);
+            ship.draw();
+        
+            missiles.forEach(element => {
+                //console.log(element);
+                element.update();
+                element.draw();
+            });
+
+            missiles = missiles.filter(function(missile){
+                return missile.y > 0;
+            });
+        },100);
+
+        function Ship(canvas, x, y, angle){
+            this.canvas = canvas;
+            this.context = canvas.getContext('2d');
+            this.x = x;
+            this.y = y;
+            this.angle = angle;
+            this.isShooting = false;
+
+            this.drawShip = function(){
+                this.context.beginPath();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(20, 0);
+                this.context.lineTo(0, -Math.sqrt(3)/2*40);
+                this.context.lineTo(-20, 0);
+                this.context.closePath();
+                this.context.fillStyle = "white";
+                this.context.fill();
+            }
+
+            this.draw = function() {
+                //save current state
+                this.context.save();
+
+                //clear screen
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                //move the origin and rotate the axis
+                this.context.translate(this.x, this.y);
+                this.context.rotate(this.angle);
+                
+                //draw ship
+                this.context.beginPath();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(20, 0);
+                this.context.lineTo(0, -Math.sqrt(3)/2*40);
+                this.context.lineTo(-20, 0);
+                this.context.closePath();
+                this.context.fillStyle = "white";
+                this.context.fill();
+
+                //restore the previous state
+                this.context.translate(-this.x, -this.y);
+                this.context.restore();
+            }
+
+            this.move = function(dl) {
+                this.x = this.x - dl*Math.sin(this.angle);
+                this.y = this.y + dl*Math.cos(this.angle);
+                currentX = this.x;
+                currentY = this.y;
+                this.draw();
+            }
+
+            this.rotate = function(dr){
+                this.angle = this.angle + dr;
+                currentAngle = this.angle;
+                this.draw();
+            }
+
+            this.shoot = function(){
+                this.isShooting = !this.isShooting;         
+                console.log(this.isShooting);
+                
+                if(this.isShooting){
+                    missileAppender = setInterval(function(){
+                        missiles.push(new Missile(canvas, currentX, currentY, currentAngle));
+                    }, 100);
+                }
+                else{
+                    clearInterval(missileAppender);
+                }
+            }
+        }
+
+        function Missile(canvas, x, y, angle){
+            this.name = name;
+            this.canvas = canvas;
+            this.x = x;
+            this.y = y;
+            this.angle = angle
+            this.context = canvas.getContext('2d');
+
+            this.update = function(){
+                this.x = this.x + 20*Math.sin(this.angle);
+                this.y = this.y - 20*Math.cos(this.angle);;
+            }
+
+            this.draw = function(){
+                console.log(`this.angle=${this.angle}`);
+                //save current state
+                this.context.save();
+
+                //move the origin and rotate the axis
+                this.context.translate(this.x, this.y);
+                this.context.rotate(this.angle);
+                
+                //draw
+                this.context.beginPath();
+                this.context.arc(0, 0, 2, 0, 2*Math.PI);
+                this.context.fillStyle = "white";
+                this.context.fill();
+
+                //restore the previous state
+                this.context.translate(-this.x, -this.y);
+                this.context.restore();
+            }
+        }
+
+        window.addEventListener('keydown', function(event) {
+            switch(event.keyCode) {
+                case 32:
+                    //space button
+                    ship.shoot();
+                    break;
+                case 37:
+                    //left arrow key
+                    ship.rotate(-Math.PI/12); 
+                    break;
+                case 38: 
+                    //up arrow key
+                    ship.move(-8);
+                    break;
+                case 39:
+                    //right arrow key
+                    ship.rotate(Math.PI/12);
+                    break;
+                case 40: 
+                    //down arrow key
+                    //ship.move(8);
+                    break;
+            }
+        });
+
+    </script>
+</body>
+</html>
