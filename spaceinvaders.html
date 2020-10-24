@@ -31,22 +31,26 @@
         canvas.height = window.innerHeight;
 
         const ship = new Ship(canvas, currentX, currentY, currentAngle);
-        //ship.draw();
             
         setInterval(function(){
+            render();
+        },50);
+
+        function render(){
             context.clearRect(0,0, canvas.width, canvas.height);
-            ship.draw();
-        
+            ship.render();
+            
             missiles.forEach(element => {
-                //console.log(element);
-                element.update();
-                element.draw();
+                element.render();
             });
 
             missiles = missiles.filter(function(missile){
-                return missile.y > 0;
+                return missile.x > 0 && 
+                    missile.y > 0 && 
+                    missile.x < canvas.width &&  
+                    missile.y < canvas.height
             });
-        },100);
+        }
 
         function Ship(canvas, x, y, angle){
             this.canvas = canvas;
@@ -55,6 +59,11 @@
             this.y = y;
             this.angle = angle;
             this.isShooting = false;
+            this.shipHeight = Math.sqrt(3)/2*40;
+
+            this.render = function(){
+                this.draw();
+            }
 
             this.drawShip = function(){
                 this.context.beginPath();
@@ -67,12 +76,10 @@
                 this.context.fill();
             }
 
+
             this.draw = function() {
                 //save current state
                 this.context.save();
-
-                //clear screen
-                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 
                 //move the origin and rotate the axis
                 this.context.translate(this.x, this.y);
@@ -94,27 +101,34 @@
             }
 
             this.move = function(dl) {
-                this.x = this.x - dl*Math.sin(this.angle);
-                this.y = this.y + dl*Math.cos(this.angle);
+                const nextX = this.x - dl*Math.sin(this.angle);
+                const nextY = this.y + dl*Math.cos(this.angle);
+                
+                //check boundaries
+                if(nextX < (0 + this.shipHeight) || 
+                    nextY < (0 + this.shipHeight) || 
+                    nextX > (this.canvas.width - this.shipHeight) || 
+                    nextY > (this.canvas.height - this.shipHeight))
+                    return;
+
+                this.x = nextX;
+                this.y = nextY;
                 currentX = this.x;
                 currentY = this.y;
-                this.draw();
             }
 
             this.rotate = function(dr){
                 this.angle = this.angle + dr;
                 currentAngle = this.angle;
-                this.draw();
             }
 
             this.shoot = function(){
                 this.isShooting = !this.isShooting;         
-                console.log(this.isShooting);
                 
                 if(this.isShooting){
                     missileAppender = setInterval(function(){
                         missiles.push(new Missile(canvas, currentX, currentY, currentAngle));
-                    }, 100);
+                    }, 50);
                 }
                 else{
                     clearInterval(missileAppender);
@@ -130,13 +144,17 @@
             this.angle = angle
             this.context = canvas.getContext('2d');
 
+            this.render = function(){
+                this.update();
+                this.draw();
+            }
+
             this.update = function(){
                 this.x = this.x + 20*Math.sin(this.angle);
-                this.y = this.y - 20*Math.cos(this.angle);;
+                this.y = this.y - 20*Math.cos(this.angle);
             }
 
             this.draw = function(){
-                console.log(`this.angle=${this.angle}`);
                 //save current state
                 this.context.save();
 
@@ -160,11 +178,11 @@
             switch(event.keyCode) {
                 case 32:
                     //space button
-                    ship.shoot();
+                    ship.shoot(); 
                     break;
                 case 37:
                     //left arrow key
-                    ship.rotate(-Math.PI/12); 
+                    ship.rotate(-Math.PI/16); 
                     break;
                 case 38: 
                     //up arrow key
@@ -172,13 +190,14 @@
                     break;
                 case 39:
                     //right arrow key
-                    ship.rotate(Math.PI/12);
+                    ship.rotate(Math.PI/16);
                     break;
                 case 40: 
                     //down arrow key
                     //ship.move(8);
                     break;
             }
+            render();
         });
 
     </script>
