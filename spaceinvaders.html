@@ -17,6 +17,9 @@
         <canvas id="canvas"></canvas>
     </div>
     <script>
+        const maxRadius = 100;
+        const minRadius = 10;
+        
         var missiles = [];
         var asteroids = [];
         var missileAppender = 0;
@@ -32,12 +35,10 @@
         canvas.height = window.innerHeight;
 
         const ship = new Ship(canvas, currentX, currentY, currentAngle);
-            
+
         setInterval(function(){
             render();
         }, 50);
-
-        asteroids.push(new Asteroid(canvas));
 
         function render(){
             //clear
@@ -74,6 +75,14 @@
                     asteroid.x < (canvas.width + asteroid.radius) &&  
                     asteroid.y < (canvas.height + asteroid.radius)
             });
+
+            //begin with n number of asteroid
+            //add asteroids after few move out of screen
+            while(asteroids.length < 15){
+                const asteroid = getAsteroid();    
+                if(asteroid)
+                    asteroids.push(asteroid);
+            }
         }
 
         function Ship(canvas, x, y, angle){
@@ -199,15 +208,13 @@
             }
         }
 
-        function Asteroid(canvas){
+        function Asteroid(canvas, x, y, angle, radius){
             this.canvas = canvas;
             this.context = canvas.getContext('2d');
-            this.x = 200;
-            this.y = 200;
-            this.angle = (Math.floor(Math.random() * (360 - 0) + 1) + 0) * (Math.PI/180);
-            this.maxRadius = 100;
-            this.minRadius = 10;
-            this.radius = Math.floor(Math.random() * (this.maxRadius - this.minRadius) + 1) + this.minRadius;
+            this.x = x;
+            this.y = y;
+            this.angle = angle;
+            this.radius = radius;
             
             this.render = function(){
                 this.update();
@@ -238,6 +245,17 @@
                 this.context.translate(-this.x, -this.y);
                 this.context.restore();
             }
+        }
+
+        function getAsteroid(){
+            const x = Math.floor(Math.random() * (canvas.width - 0) + 1) + 0;
+            const y = Math.floor(Math.random() * (canvas.height - 0) + 1) + 0;
+            const angle = (Math.floor(Math.random() * (360 - 0) + 1) + 0) * (Math.PI/180);
+            const radius = Math.floor(Math.random() * (maxRadius - minRadius) + 1) + minRadius;
+            
+            if(Math.abs(x + radius - currentX) > 100 &&
+                Math.abs(y + radius - currentY) > 100)
+                return new Asteroid(canvas, x, y, angle, radius);
         }
 
         window.addEventListener('keydown', function(event) {
