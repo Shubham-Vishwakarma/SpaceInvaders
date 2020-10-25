@@ -38,7 +38,27 @@
 
         setInterval(function(){
             render();
+            missileAndAsteroidCollisionDetection();
         }, 50);
+
+        //calculate distance between missile and asteroid to determine collision
+        //Distance formula d^2 = (x2 - x1)^2 + (y2 - y1)^2
+        function missileAndAsteroidCollisionDetection(){
+            for(let i = 0; i < asteroids.length; i++){
+                for(let j = 0; j < missiles.length; j++){
+                    const asteroid = asteroids[i];
+                    const missile = missiles[j];
+
+                    const x2 = (asteroid.x - missile.x) * (asteroid.x - missile.x);
+                    const y2 = (asteroid.y - missile.y) * (asteroid.y - missile.y);
+                    const r2 = (asteroid.radius + missile.radius) * (asteroid.radius + missile.radius);
+
+                    if(Math.floor(x2 + y2 -r2) <= 0){
+                            console.log('collision');
+                    }
+                }   
+            }
+        }
 
         function render(){
             //clear
@@ -77,7 +97,6 @@
             });
 
             //begin with n number of asteroid
-            //add asteroids after few move out of screen
             while(asteroids.length < 15){
                 const asteroid = getAsteroid();    
                 if(asteroid)
@@ -175,6 +194,7 @@
             this.x = x;
             this.y = y;
             this.angle = angle
+            this.radius = 2;
             this.context = canvas.getContext('2d');
 
             this.render = function(){
@@ -197,7 +217,7 @@
                 
                 //draw
                 this.context.beginPath();
-                this.context.arc(0, 0, 2, 0, 2*Math.PI);
+                this.context.arc(0, 0, this.radius, 0, 2*Math.PI);
                 this.context.closePath();
                 this.context.fillStyle = "white";
                 this.context.fill();
