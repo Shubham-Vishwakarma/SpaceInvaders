@@ -18,7 +18,7 @@
     </div>
     <script>
         const maxRadius = 100;
-        const minRadius = 10;
+        const minRadius = 20;
         
         var missiles = [];
         var asteroids = [];
@@ -54,7 +54,15 @@
                     const r2 = (asteroid.radius + missile.radius) * (asteroid.radius + missile.radius);
 
                     if(Math.floor(x2 + y2 -r2) <= 0){
-                            console.log('collision');
+                        const newasteroid = asteroid.burst();
+
+                        if(newasteroid.radius > minRadius)
+                            asteroids.push(newasteroid);
+                        else
+                            asteroids.splice(i, 1);
+
+                        //remove missile or destroy missile
+                        missiles.splice(j,1);
                     }
                 }   
             }
@@ -264,6 +272,17 @@
                 //restore the previous state
                 this.context.translate(-this.x, -this.y);
                 this.context.restore();
+            }
+
+            this.burst = function(){
+                this.radius = this.radius/2;
+                this.x = this.x + 2.5*this.radius*Math.sin(this.angle);
+                this.y = this.y - 2.5*this.radius*Math.cos(this.angle);
+
+                const newx = this.x - 2.5*this.radius*Math.sin(this.angle);
+                const newy = this.y + 2.5*this.radius*Math.cos(this.angle);
+
+                return new Asteroid(this.canvas, newx, newy, -this.angle, this.radius);   
             }
         }
 
