@@ -23,6 +23,7 @@
         var missiles = [];
         var asteroids = [];
         var missileAppender = 0;
+        var score = 0;
 
         var currentX = window.innerWidth/2;
         var currentY = window.innerHeight/2;
@@ -63,6 +64,7 @@
 
                         //remove missile or destroy missile
                         missiles.splice(j,1);
+                        score = score + 5;
                     }
                 }   
             }
@@ -72,6 +74,8 @@
             //clear
             context.clearRect(0,0, canvas.width, canvas.height);
             
+            renderScore();
+
             //draw ship
             ship.render();
             
@@ -110,6 +114,12 @@
                 if(asteroid)
                     asteroids.push(asteroid);
             }
+        }
+
+        function renderScore(){
+            context.font = "16px Arial";
+            context.fillStyle = "white";
+            context.fillText(`Score = ${score}`, 10, 30);
         }
 
         function Ship(canvas, x, y, angle){
