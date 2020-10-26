@@ -184,15 +184,16 @@
 
             this.shoot = function(){
                 this.isShooting = !this.isShooting;         
-                
-                if(this.isShooting){
-                    missileAppender = setInterval(function(){
-                        missiles.push(new Missile(canvas, currentX, currentY, currentAngle));
-                    }, 50);
-                }
-                else{
-                    clearInterval(missileAppender);
-                }
+                missiles.push(new Missile(canvas, this.x, this.y, this.angle));
+
+                // if(this.isShooting){
+                //     missileAppender = setInterval(function(){
+                //         missiles.push(new Missile(canvas, currentX, currentY, currentAngle));
+                //     }, 50);
+                // }
+                // else{
+                //     clearInterval(missileAppender);
+                // }
             }
         }
 
