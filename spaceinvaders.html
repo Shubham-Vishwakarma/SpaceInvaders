@@ -90,7 +90,6 @@
                 const d2 = (asteroid.radius + shipRadius) * (asteroid.radius + shipRadius);
 
                 if(Math.floor(x2 + y2 -d2) <= 0){{
-                        console.log('Ship Explode');
                         isGameOver = true;
                     }
                 }
@@ -147,18 +146,19 @@
         }
 
         function renderScore(){
-            context.font = "16px Arial";
+            context.font = "24px Arial";
             context.fillStyle = "white";
             context.fillText(`Score = ${score}`, 10, 30);
         }
 
         function renderGameOver(){
             const x = canvas.width/2;
-            const y = canvas.height/2;
-            context.font = "64px Arial";
+            const y = canvas.height/4;
+            context.font = "64px sans-serif";
             context.fillStyle = "white";
             context.textAlign = "center"
             context.fillText(`Game Over`, x, y);
+            context.fillText(`Score = ${score}`, x, y+64);
         }
 
         function Ship(canvas, x, y, angle){
