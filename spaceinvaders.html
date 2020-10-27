@@ -174,18 +174,6 @@
                 this.draw();
             }
 
-            this.drawShip = function(){
-                this.context.beginPath();
-                this.context.moveTo(0, 0);
-                this.context.lineTo(20, 0);
-                this.context.lineTo(0, -Math.sqrt(3)/2*40);
-                this.context.lineTo(-20, 0);
-                this.context.closePath();
-                this.context.fillStyle = "white";
-                this.context.fill();
-            }
-
-
             this.draw = function() {
                 //save current state
                 this.context.save();
@@ -202,6 +190,25 @@
                 this.context.lineTo(-20, 0);
                 this.context.closePath();
                 this.context.fillStyle = "white";
+                this.context.fill();
+
+                //draw fake flames
+                this.context.beginPath();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(8, 0);
+                this.context.lineTo(0, Math.sqrt(3)/2*16);
+                this.context.lineTo(-8, 0);
+                this.context.closePath();
+                this.context.fillStyle = "yellow";
+                this.context.fill();
+
+                this.context.beginPath();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(5, 0);
+                this.context.lineTo(0, Math.sqrt(3)/2*10);
+                this.context.lineTo(-5, 0);
+                this.context.closePath();
+                this.context.fillStyle = "red";
                 this.context.fill();
 
                 //restore the previous state
