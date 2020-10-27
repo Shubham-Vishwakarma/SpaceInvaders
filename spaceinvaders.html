@@ -104,6 +104,7 @@
             context.clearRect(0,0, canvas.width, canvas.height);
             
             renderScore();
+            renderControls();
 
             //draw ship
             ship.render();
@@ -146,9 +147,12 @@
         }
 
         function renderScore(){
+            var textScore = `Score = ${score}`;
+            var textScoreWidth = context.measureText(textScore).width;
             context.font = "24px Arial";
             context.fillStyle = "white";
-            context.fillText(`Score = ${score}`, 10, 30);
+            context.textAlign = "center";
+            context.fillText(textScore, canvas.width - (textScoreWidth/2) - 30, 30);
         }
 
         function renderGameOver(){
@@ -159,6 +163,15 @@
             context.textAlign = "center"
             context.fillText(`Game Over`, x, y);
             context.fillText(`Score = ${score}`, x, y+64);
+        }
+
+        function renderControls(){
+            const x = canvas.width/2;
+            context.font = "24px Arial";
+            context.textAlign = "center";
+            context.fillStyle = "white";
+            context.fillText(`[↑] [↓] [→] [←] to move`, x, 30);
+            context.fillText(`Hit [space] to fire`, x, 30 + 24);
         }
 
         function Ship(canvas, x, y, angle){
