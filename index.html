@@ -46,7 +46,7 @@
             render();
             missileAndAsteroidCollisionDetection();
             shipAndAsteroidCollisionDetection();
-        }, 50);
+        });
 
         //calculate distance between missile and asteroid to determine collision
         //Distance formula d^2 = (x2 - x1)^2 + (y2 - y1)^2
@@ -281,8 +281,8 @@
             }
 
             this.update = function(){
-                this.x = this.x + 20*Math.sin(this.angle);
-                this.y = this.y - 20*Math.cos(this.angle);
+                this.x = this.x + 5*Math.sin(this.angle);
+                this.y = this.y - 5*Math.cos(this.angle);
             }
 
             this.draw = function(){
@@ -320,8 +320,8 @@
             }
 
             this.update = function(){
-                this.x = this.x + 1*Math.sin(this.angle);
-                this.y = this.y - 1*Math.cos(this.angle);
+                this.x = this.x + 2*Math.sin(this.angle);
+                this.y = this.y - 2*Math.cos(this.angle);
             }
 
             this.draw = function(){
@@ -390,7 +390,7 @@
                     //ship.move(8);
                     break;
             }
-            render();
+            //render();
         });
 
     </script>
