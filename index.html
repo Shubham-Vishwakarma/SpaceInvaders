@@ -281,6 +281,7 @@
                 missiles.push(new Missile(canvas, this.x, this.y, this.angle));
             }
 
+            //reset ship to center
             this.reset = function(){
                 this.x = this.canvas.width/2;
                 this.y = this.canvas.height/2;
@@ -428,13 +429,14 @@
 
                     const x2 = (mouseX - centerX) * (mouseX - centerX);
                     const y2 = (mouseY - centerY) * (mouseY - centerY);
-
+                    
+                    //Reset only if clicked inside play again button
                     if(x2 + y2 - (150*150) < 0){
                         console.log('Play Again');
                         isGameOver = false;
-                        asteroids = [];
-                        missiles = [];
-                        ship.reset();
+                        asteroids = []; //clear asteroids
+                        missiles = []; //clear missiles
+                        ship.reset(); //reset ship to center
                     }
                 }
             });
