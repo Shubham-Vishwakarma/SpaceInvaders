@@ -39,13 +39,7 @@
         const ship = new Ship(canvas, currentX, currentY, currentAngle);
 
         setInterval(function(){
-            if(isGameOver){
-                renderGameOver();
-                return;
-            }
             render();
-            missileAndAsteroidCollisionDetection();
-            shipAndAsteroidCollisionDetection();
         });
 
         //calculate distance between missile and asteroid to determine collision
@@ -56,21 +50,23 @@
                     const asteroid = asteroids[i];
                     const missile = missiles[j];
 
-                    const x2 = (asteroid.x - missile.x) * (asteroid.x - missile.x);
-                    const y2 = (asteroid.y - missile.y) * (asteroid.y - missile.y);
-                    const r2 = (asteroid.radius + missile.radius) * (asteroid.radius + missile.radius);
+                    if(asteroid && missile){
+                        const x2 = (asteroid.x - missile.x) * (asteroid.x - missile.x);
+                        const y2 = (asteroid.y - missile.y) * (asteroid.y - missile.y);
+                        const r2 = (asteroid.radius + missile.radius) * (asteroid.radius + missile.radius);
 
-                    if(Math.floor(x2 + y2 -r2) <= 0){
-                        const newasteroid = asteroid.burst();
+                        if(Math.floor(x2 + y2 -r2) <= 0){
+                            const newasteroid = asteroid.burst();
 
-                        if(newasteroid.radius > minRadius)
-                            asteroids.push(newasteroid);
-                        else
-                            asteroids.splice(i, 1);
+                            if(newasteroid.radius > minRadius)
+                                asteroids.push(newasteroid);
+                            else
+                                asteroids.splice(i, 1);
 
-                        //remove missile or destroy missile
-                        missiles.splice(j,1);
-                        score = score + 5;
+                            //remove missile or destroy missile
+                            missiles.splice(j,1);
+                            score = score + 5;
+                        }
                     }
                 }   
             }
@@ -97,11 +93,13 @@
         }
 
         function render(){
-            if(isGameOver)
-                return;
-
             //clear
             context.clearRect(0,0, canvas.width, canvas.height);
+
+            if(isGameOver){
+                renderGameOver();
+                return;
+            }
             
             renderScore();
             renderControls();
@@ -144,6 +142,33 @@
                 if(asteroid)
                     asteroids.push(asteroid);
             }
+
+            missileAndAsteroidCollisionDetection();
+            shipAndAsteroidCollisionDetection();
+        }
+
+        function renderPlayAgain(){
+            context.beginPath();
+            context.lineWidth = 3;
+            context.arc(canvas.width/2, canvas.height/2, 150, 0, 2*Math.PI);
+            context.closePath();
+            context.strokeStyle = "white";
+            context.stroke();
+
+            context.beginPath();
+            context.lineWidth = 5;
+            context.moveTo(canvas.width/2 + 101, canvas.height/2 - 5);
+            context.lineTo(canvas.width/2 + 80, canvas.height/2 + 20);
+            context.moveTo(canvas.width/2 + 100, canvas.height/2 - 5);
+            context.lineTo(canvas.width/2 + 120, canvas.height/2 + 20);
+            context.arc(canvas.width/2, canvas.height/2, 100, 0, 3*Math.PI/2);
+            context.strokeStyle = "white";
+            context.stroke();
+
+            context.font = "64px sans-serif";
+            context.fillStyle = "white";
+            context.textAlign = "center"
+            context.fillText(`Play Again`, canvas.width/2, canvas.height/2 + 220);
         }
 
         function renderScore(){
@@ -156,13 +181,13 @@
         }
 
         function renderGameOver(){
-            const x = canvas.width/2;
-            const y = canvas.height/4;
             context.font = "64px sans-serif";
             context.fillStyle = "white";
             context.textAlign = "center"
-            context.fillText(`Game Over`, x, y);
-            context.fillText(`Score = ${score}`, x, y+64);
+            context.fillText(`Game Over`, canvas.width/2, canvas.height/4);
+            context.fillText(`Score = ${score}`, canvas.width/2, canvas.height/4 + 64);
+
+            renderPlayAgain();
         }
 
         function renderControls(){
@@ -254,15 +279,15 @@
             this.shoot = function(){
                 this.isShooting = !this.isShooting;         
                 missiles.push(new Missile(canvas, this.x, this.y, this.angle));
+            }
 
-                // if(this.isShooting){
-                //     missileAppender = setInterval(function(){
-                //         missiles.push(new Missile(canvas, currentX, currentY, currentAngle));
-                //     }, 50);
-                // }
-                // else{
-                //     clearInterval(missileAppender);
-                // }
+            this.reset = function(){
+                this.x = this.canvas.width/2;
+                this.y = this.canvas.height/2;
+                this.angle = 0;
+                currentX = this.x;
+                currentY = this.y;
+                currentAngle = this.angle;
             }
         }
 
@@ -334,6 +359,7 @@
                 
                 //draw
                 this.context.beginPath();
+                this.context.lineWidth = 5;
                 this.context.arc(0, 0, this.radius, 0, 2*Math.PI);
                 this.context.closePath();
                 this.context.strokeStyle = "white";
@@ -392,6 +418,26 @@
             }
             //render();
         });
+
+        canvas.addEventListener('click', function(event){
+                if(isGameOver){
+                    const mouseX = event.clientX;
+                    const mouseY = event.clientY;
+                    const centerX = canvas.width/2;
+                    const centerY = canvas.height/2;
+
+                    const x2 = (mouseX - centerX) * (mouseX - centerX);
+                    const y2 = (mouseY - centerY) * (mouseY - centerY);
+
+                    if(x2 + y2 - (150*150) < 0){
+                        console.log('Play Again');
+                        isGameOver = false;
+                        asteroids = [];
+                        missiles = [];
+                        ship.reset();
+                    }
+                }
+            });
 
     </script>
 </body>
