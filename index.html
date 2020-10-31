@@ -26,15 +26,15 @@
         var score = 0;
         var isGameOver = false;
 
-        var currentX = window.innerWidth/2;
-        var currentY = window.innerHeight/2;
-        var currentAngle = 0;
-
         const canvas = document.getElementById("canvas");
         const context = canvas.getContext('2d');
         
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+
+        var currentX = canvas.width/2;
+        var currentY = canvas.height/2;
+        var currentAngle = 0;
 
         const ship = new Ship(canvas, currentX, currentY, currentAngle);
 
@@ -418,6 +418,11 @@
                     break;
             }
             //render();
+        });
+
+        window.addEventListener('resize', function(event){
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         });
 
         canvas.addEventListener('click', function(event){
