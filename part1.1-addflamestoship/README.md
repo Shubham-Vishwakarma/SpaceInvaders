@@ -34,6 +34,25 @@ function Ship(canvas,x, y){
         this.context.fillStyle = "white";   //set fillstyle as white, since the background is black
         this.context.fill();    //fill the shape
 
+        //draw fake flames
+        this.context.beginPath();
+        this.context.moveTo(0, 0);
+        this.context.lineTo(8, 0);
+        this.context.lineTo(0, Math.sqrt(3)/2*16);
+        this.context.lineTo(-8, 0);
+        this.context.closePath();
+        this.context.fillStyle = "yellow";
+        this.context.fill();
+
+        this.context.beginPath();
+        this.context.moveTo(0, 0);
+        this.context.lineTo(5, 0);
+        this.context.lineTo(0, Math.sqrt(3)/2*10);
+        this.context.lineTo(-5, 0);
+        this.context.closePath();
+        this.context.fillStyle = "red";
+        this.context.fill();
+
         //restore the previous state
         this.context.translate(-this.x, -this.y);
  
@@ -47,4 +66,4 @@ ship.render();
 ```
 
 ### Output
-![fixedimage.png](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/part1-createfixedship/fixedship.png)
+![fixedimage.png](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/part1.1-addflamestoship/addflamestoship.png)
