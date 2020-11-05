@@ -20,8 +20,6 @@ function Ship(canvas,x, y){
     }
 
     this.draw = function(){
-        // save current state
-        this.context.save();
 
         // move the origin to x, y
         this.context.translate(this.x, this.y);
@@ -38,7 +36,7 @@ function Ship(canvas,x, y){
 
         //restore the previous state
         this.context.translate(-this.x, -this.y);
-        this.context.restore();
+ 
     }
 ```
 
