@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Move Ship Vertically</title>
+    <title>Make Fixed Ship</title>
 
     <style>
 
@@ -38,25 +38,8 @@
 
         // Create Ship Object and render it at center of screen
         const ship = new Ship(canvas, canvas.width/2, canvas.height/2);
-
-        render();
-
-        function render() {
-            
-            // clear the canvas
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            
-            //save the current context
-            context.save();
-
-            // Render Ship
-            ship.render();
-
-            // restore the saved context
-            context.restore();
-
-        }
-
+        ship.render();
+        
         // The Ship
         function Ship(canvas,x, y){
 
@@ -106,38 +89,11 @@
                 this.context.fillStyle = "red";
                 this.context.fill();
 
-                // restore the previous state
+                //restore the previous state
                 this.context.translate(-this.x, -this.y);
 
             }
-
-            this.move = function(dl){
-                this.y = this.y - dl;
-            }
         }
-
-        window.addEventListener('keydown', function(event){
-            switch(event.keyCode){
-                case 37:
-                    // left arrow key
-                    break;
-                case 38: 
-                    // up arrow key
-                    // move ship in up direction
-                    ship.move(4);
-                    break;
-                case 39:
-                    // right arrow key
-                    break;
-                case 40: 
-                    // down arrow key
-                    // move ship in down direction
-                    // but we dont want the ship to move backward
-                    // ship.move(-4);
-                    break;
-            }
-            render();
-        });
 
     </script>
 
