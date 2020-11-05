@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Move Ship Vertically</title>
+
+    <style>
+
+        /* Remove default margin and padding
+        set background color as black */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <!-- set display as flex to remove unnecessary spaces -->
+    <div style="display: flex;">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+
+        // get canvas element and drawing context
+        const canvas = document.getElementById("canvas");
+        const context = canvas.getContext('2d');
+
+        // set width and height equal to screen width and height
+        // using css to set width and height might not work
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Create Ship Object and render it at center of screen
+        const ship = new Ship(canvas, canvas.width/2, canvas.height/2);
+
+        render();
+
+        function render() {
+            
+            // clear the canvas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            
+            //save the current context
+            context.save();
+
+            // Render Ship
+            ship.render();
+
+            // restore the saved context
+            context.restore();
+
+        }
+
+        // The Ship
+        function Ship(canvas,x, y){
+
+            // Initialize properties
+            // Assuming x and y as the bottom-center of ship
+            this.canvas = canvas;
+            this.context = canvas.getContext('2d');
+            this.x = x;
+            this.y = y;
+
+            this.render = function(){
+                // draw the ship as position x, y
+                this.draw();
+            }
+
+            this.draw = function(){
+
+                // move the origin to x, y
+                this.context.translate(this.x, this.y);
+
+                // draw ship -> equilateral triangle of length 40
+                this.context.beginPath();   // start drawing
+                this.context.moveTo(0, 0);  // move to origin
+                this.context.lineTo(20, 0); 
+                this.context.lineTo(0, -Math.sqrt(3)/2*40); //height of equilateral triangle
+                this.context.lineTo(-20, 0);
+                this.context.closePath();   //close the shape
+                this.context.fillStyle = "white";   //set fillstyle as white, since the background is black
+                this.context.fill();    //fill the shape
+
+                //restore the previous state
+                this.context.translate(-this.x, -this.y);
+
+            }
+
+            this.move = function(dl){
+                this.y = this.y - dl;
+            }
+        }
+
+        window.addEventListener('keydown', function(event){
+            switch(event.keyCode){
+                case 37:
+                    //left arrow key
+                    break;
+                case 38: 
+                    //up arrow key
+                    //move ship in up direction
+                    ship.move(4);
+                    break;
+                case 39:
+                    //right arrow key
+                    break;
+                case 40: 
+                    //down arrow key
+                    //move ship in down direction
+                    ship.move(-4);
+                    break;
+            }
+            render();
+        });
+
+    </script>
+
+</body>
+</html>
