@@ -68,10 +68,11 @@
             this.y = y;
 
             this.render = function(){
-                // draw the ship as position x, y
+                // draw the ship at position x, y
                 this.draw();
             }
 
+            // draw ship
             this.draw = function(){
 
                 // move the origin to x, y
@@ -111,6 +112,7 @@
 
             }
 
+            //update y co-ordinate of ship
             this.move = function(dl){
                 this.y = this.y - dl;
             }
@@ -136,7 +138,7 @@
                     // ship.move(-4);
                     break;
             }
-            render();
+            render();   // re-draw with updated co-ordinates
         });
 
     </script>

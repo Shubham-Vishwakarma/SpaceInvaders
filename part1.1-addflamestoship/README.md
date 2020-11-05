@@ -1,7 +1,7 @@
 # SpaceInvaders
 Asteroid Shooting Game using Javascript
 
-## Part 1: Create Fixed Ship at Center of Screen
+## Part 1.1: Add Flames to Ship
 
 ### Define Ship Object
 ```
