@@ -20,22 +20,10 @@ function Ship(canvas,x, y){
 ```
 window.addEventListener('keydown', function(event){
     switch(event.keyCode){
-        case 37:
-            // left arrow key
-            break;
         case 38: 
             // up arrow key
             // move ship in up direction
             ship.move(4);
-            break;
-        case 39:
-            // right arrow key
-            break;
-        case 40: 
-            // down arrow key
-            // move ship in down direction
-            // but we dont want the ship to move backward
-            // ship.move(-4);
             break;
     }
     render();   // re-draw with updated co-ordinates
@@ -43,4 +31,4 @@ window.addEventListener('keydown', function(event){
 ```
 
 ### Output
-![fixedimage.png](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/part2-moveshipvertically/moveship.gif)
+![moveship.gif](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/part2-moveshipvertically/moveship.gif)
