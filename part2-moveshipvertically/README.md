@@ -41,3 +41,6 @@ window.addEventListener('keydown', function(event){
     render();   // re-draw with updated co-ordinates
 });
 ```
+
+### Output
+![fixedimage.png](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/part2-moveshipvertically/moveship.gif)

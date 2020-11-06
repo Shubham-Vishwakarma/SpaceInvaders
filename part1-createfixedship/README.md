@@ -28,7 +28,7 @@ function Ship(canvas,x, y){
         this.context.beginPath();   // start drawing
         this.context.moveTo(0, 0);  // move to origin
         this.context.lineTo(20, 0); 
-        this.context.lineTo(0, -Math.sqrt(3)/2*40); //height of equilateral triangle
+        this.context.lineTo(0, -35); //height of equilateral triangle
         this.context.lineTo(-20, 0);
         this.context.closePath();   //close the shape
         this.context.fillStyle = "white";   //set fillstyle as white, since the background is black
