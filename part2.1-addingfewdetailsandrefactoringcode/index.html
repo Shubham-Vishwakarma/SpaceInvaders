@@ -67,8 +67,9 @@
             this.context = canvas.getContext('2d');
             this.x = x;
             this.y = y;
-            this.speed = 1;
-            this.maxSpeed = 15;
+            this.minSpeed = 4;
+            this.maxSpeed = 32;
+            this.speed = this.minSpeed;
 
             this.render = function(){
                 // draw the ship at position x, y
@@ -115,14 +116,22 @@
 
             }
 
+            this.start = function(){
+                this.speed = this.speed + 2 <= this.maxSpeed ? this.speed + 2 : this.maxSpeed;
+                this.move();
+            }
+
             //update y co-ordinate of ship
             this.move = function(){
-                this.speed = this.speed + 0.2 < this.maxSpeed ? this.speed + 0.2 : this.maxSpeed;
                 this.y = Math.floor(this.y - this.speed);
             }
 
             this.stop = function(){
-                this.speed = 1;
+                while(this.speed <= this.minSpeed){
+                    this.speed = this.speed/2;
+                    this.y = Math.floor(this.y - this.speed);
+                }
+                this.speed = this.minSpeed;
             }
         }
 
@@ -134,7 +143,7 @@
                 case 38: 
                     // up arrow key
                     // move ship in up direction
-                    ship.move();
+                    ship.start();
                     break;
                 case 39:
                     // right arrow key
