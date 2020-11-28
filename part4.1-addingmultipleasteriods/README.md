@@ -3,8 +3,46 @@ Asteroid Shooting Game using Javascript
 
 ## Part 4.1: Adding Multiple Asteroid
 
-### Add Asteroid Class
+### Modify Asteroid Class
 
+```
+// The Asteroid
+function Asteroid(canvas, x, y, radius, vertices, rotationFactor, speed){
+    this.canvas = canvas;
+    this.context = canvas.getContext('2d');
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.vertices = vertices;
+    this.angle = 0;
+    this.rotationFactor = rotationFactor;
+    this.speed = speed;
+
+    this.render = function(){
+        this.move();
+        this.rotate();
+        this.draw();
+    }
+
+    // draw asteroid
+    this.draw = function(){
+        ...
+        ...
+    }
+
+    this.move = function(){
+        this.x = Math.floor(this.x + this.speed*Math.sin(this.angle));
+        this.y = Math.floor(this.y - this.speed*Math.cos(this.angle));
+    }
+
+    // rotate the asteroid
+    this.rotate = function(){
+        this.angle += this.rotationFactor;
+    }
+}
+```
+
+### Return new Asteroid using some random value
 I have tried some random value to determine, position of new asteroids and it's next movement<br/>
 The below logic is pure mathematical calculation.<br/>
 
