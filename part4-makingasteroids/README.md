@@ -1,7 +1,7 @@
 # SpaceInvaders
 Asteroid Shooting Game using Javascript
 
-## Part 3: Making Asteroid
+## Part 4: Making Asteroid
 
 ### Add Asteroid Class
 To add some visual effect we will rotate the asteroid around it's center
