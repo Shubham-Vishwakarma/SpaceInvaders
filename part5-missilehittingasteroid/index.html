@@ -343,6 +343,10 @@
         // check the missiles and asteroids collision
         // increment score
         function playGame(){
+            checkMissileAndAsteroidCollision();
+        }
+
+        function checkMissileAndAsteroidCollision(){
             for(let i = 0; i < missiles.length; i++){
                 for(let j = 0; j < asteroids.length; j++){
 

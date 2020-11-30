@@ -8,7 +8,7 @@ Asteroid Shooting Game using Javascript
 // start playing game. 
 // loop through missile array and asteroid array to check if they are colliding
 // increment score
-function playGame(){
+function checkMissileAndAsteroidCollision(){
     for(let i = 0; i < missiles.length; i++){
         for(let j = 0; j < asteroids.length; j++){
 
