@@ -1,5 +1,5 @@
 # SpaceInvaders
-Asteroid Shooting Game using Javascript
+Step by Step Building Asteroid Shooting Game using Javascript
 
 ## Pseudocode
 * Building SpaceShip
