@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaceship Colliding Asteroid</title>
+
+    <style>
+
+        /* Remove default margin and padding
+        set background color as black */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <!-- set display as flex to remove unnecessary spaces -->
+    <div style="display: flex;">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+
+        // get canvas element and drawing context
+        const canvas = document.getElementById("canvas");
+        const context = canvas.getContext('2d');
+
+        // set width and height equal to screen width and height
+        // using css to set width and height might not work
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // define missiles array to store all individual missile
+        var missiles = [];
+
+        // define asteroids array to store all individual asteroid
+        var asteroids = [];
+
+        //define score
+        var score = 0;
+
+        // Create Ship Object and render it at center of screen
+        const ship = new Ship(canvas, canvas.width/2, canvas.height/2, 0);
+        
+        render();
+
+        function render() {
+
+            requestAnimationFrame(render);
+            
+            // clear the canvas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            
+            //save the current context
+            context.save();
+
+            // Render Ship
+            ship.render();
+
+            // start the game
+            // score calculation
+            playGame();
+
+            // draw missiles
+            missiles.forEach((missile) => (missile.render()));
+
+            // remove missile from array when out of screen
+            missiles = missiles.filter((missile) => (
+                        missile.x > 0 &&
+                        missile.y > 0 &&
+                        missile.x < canvas.width &&
+                        missile.y < canvas.height
+            ));
+
+            // render asteroid
+            asteroids.forEach((asteroid) => (asteroid.render()));
+
+            // remove asteroid from array when asteroid moves out of screen
+            asteroids = asteroids.filter(function(asteroid){
+                return asteroid.x > 0 &&
+                asteroid.y > 0 &&
+                asteroid.x < canvas.width &&
+                asteroid.y < canvas.height
+            });
+
+            // Keep minimum of 5 asteroids on the screen
+            if(asteroids.length < 5){
+                const asteroid = getNewAsteroid();
+                if(asteroid) asteroids.push(asteroid);
+            }
+
+            // restore the saved context
+            context.restore();
+
+        }
+
+        // The Ship
+        function Ship(canvas, x, y, angle){
+
+            // Initialize properties
+            // Assuming x and y as the bottom-center of ship
+            this.canvas = canvas;
+            this.context = canvas.getContext('2d');
+            this.x = x;
+            this.y = y;
+            this.angle = angle;
+            this.minSpeed = 4;
+            this.maxSpeed = 32;
+            this.speed = this.minSpeed;
+
+            this.render = function(){
+                // draw the ship at position x, y
+                this.draw();
+            }
+
+            // draw ship
+            this.draw = function(){
+                //save the current state
+                this.context.save();
+
+                // move the origin to x, y
+                this.context.translate(this.x, this.y);
+                // rotate the frame by angle in radians
+                this.context.rotate(this.angle);
+
+                // draw ship -> equilateral triangle of length 40
+                this.context.beginPath();   // start drawing
+                this.context.moveTo(0, 0);  // move to origin
+                this.context.lineTo(20, 0); 
+                this.context.lineTo(0, -36); //height of equilateral triangle
+                this.context.lineTo(-20, 0);
+                this.context.closePath();   //close the shape
+                this.context.fillStyle = "white";   //set fillstyle as white, since the background is black
+                this.context.fill();    //fill the shape
+
+                //draw fake flames
+                this.context.beginPath();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(8, 0);
+                this.context.lineTo(0, 13);
+                this.context.lineTo(-8, 0);
+                this.context.closePath();
+                this.context.fillStyle = "yellow";
+                this.context.fill();
+
+                this.context.beginPath();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(5, 0);
+                this.context.lineTo(0, 8);
+                this.context.lineTo(-5, 0);
+                this.context.closePath();
+                this.context.fillStyle = "red";
+                this.context.fill();
+
+                // restore the previous state
+                this.context.restore();
+
+            }
+
+            this.start = function(){
+                this.speed = this.speed + 2 <= this.maxSpeed ? this.speed + 2 : this.maxSpeed;
+                this.move();
+            }
+
+            //update x and y co-ordinate of ship
+            this.move = function(){
+                this.x = Math.floor(this.x + this.speed*Math.sin(this.angle));
+                this.y = Math.floor(this.y - this.speed*Math.cos(this.angle));
+            }
+
+            this.stop = function(){
+                while(this.speed <= this.minSpeed){
+                    this.speed = this.speed/2;
+                    this.x = Math.floor(this.x + this.speed*Math.sin(this.angle));
+                    this.y = Math.floor(this.y - this.speed*Math.cos(this.angle));
+                }
+                this.speed = this.minSpeed;
+            }
+
+            // convert degree to radians
+            this.rotate = function(dr){
+                this.angle = this.angle + Math.PI/180*dr;
+            }
+
+            this.shoot = function(){
+                missiles.push(new Missile(this.canvas, this.x, this.y, this.angle))
+            }
+        }
+
+        // The Missile
+        function Missile(canvas, x, y, angle){
+            this.canvas = canvas;
+            this.context = canvas.getContext('2d');
+            this.x = x;
+            this.y = y;
+            this.angle = angle;
+            this.radius = 2;
+
+            this.render = function(){
+                this.update();
+                this.draw();
+            }
+
+            this.draw = function(){
+                // save context
+                this.context.save();
+
+                // draw missile
+                this.context.beginPath();
+                this.context.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+                this.context.closePath();
+                this.context.fillStyle = "white";
+                this.context.fill();
+
+                // restore context
+                this.context.restore();
+            }
+
+            this.update = function(){
+                this.x = Math.floor(this.x + 10*Math.sin(this.angle));
+                this.y = Math.floor(this.y - 10*Math.cos(this.angle));
+            }
+        }
+
+        // The Asteroid
+        function Asteroid(canvas, x, y, radius, vertices, rotationFactor, speed){
+            this.canvas = canvas;
+            this.context = canvas.getContext('2d');
+            this.x = x;
+            this.y = y;
+            this.radius = radius;
+            this.vertices = vertices;
+            this.angle = 0;
+            this.rotationFactor = rotationFactor;
+            this.speed = speed;
+
+            this.render = function(){
+                this.move();
+                this.rotate();
+                this.draw();
+            }
+
+            // draw asteroid
+            this.draw = function(){
+                // save the current context
+                this.context.save();
+
+                this.context.translate(this.x, this.y);
+                this.context.rotate(this.angle);
+
+                // draw asteroid
+                this.context.strokeStyle = 'white';
+                this.context.lineWidth = 5;
+                this.context.beginPath();
+                
+                // find co-ordinates
+                const angle = Math.PI/180*(360/this.vertices);
+                const _x = Math.floor(this.radius*Math.cos(angle));
+                const _y = Math.floor(this.radius*Math.sin(angle));
+
+                // draw asteroid
+                for(let i = 0; i < this.vertices; i++){
+                    this.context.rotate(angle);
+                    this.context.moveTo(this.radius, 0);
+                    this.context.lineTo(_x, _y);    
+                }
+
+                this.context.closePath();
+                this.context.stroke();
+
+                //restore the last saved context
+                this.context.restore();
+            }
+
+            this.move = function(){
+                this.x = Math.floor(this.x + this.speed*Math.sin(this.angle));
+                this.y = Math.floor(this.y - this.speed*Math.cos(this.angle));
+            }
+
+            // rotate the asteroid
+            this.rotate = function(){
+                this.angle += this.rotationFactor;
+            }
+        }
+
+        // Random int number between given range Math.floor(Math.random() * (max - min + 1)) + min;
+        // After some trial and error, decided some of the below random values
+        function getNewAsteroid(){
+
+            // determine random side of screen to begin
+            const side = Math.floor(Math.random() * (3 - 0 + 1) + 0);
+            
+            // get random x and y between screen range as start point of asteroid
+            let x = Math.floor(Math.random() * (canvas.width - 0 + 1)) + 0;
+            let y = Math.floor(Math.random() * (canvas.height - 0 + 1)) + 0;
+
+            switch(side){
+                // start from left screen
+                case 0: 
+                    x = 0;
+                    break;
+                // start from top screen
+                case 1:
+                    y = 0;
+                    break;
+                // start from right screen
+                case 2:
+                    x = canvas.width;
+                    break;
+                // start from bottom screen
+                case 3:
+                    y = canvas.height;
+                    break;
+            }
+
+            // generate random number of vertices to give some shape to asteroid polygon
+            const vertices = Math.floor(Math.random() * (10 - 7 + 1)) + 7;
+
+            // generate random radius between minRadius and maxRadius
+            const radius = Math.floor(Math.random() * (100 - 25 + 1)) + 25;
+
+            // generate random rotation angle and speed for asteroid
+            const rotationFactor = Math.random() * (1/radius - (-1/radius)) + (-1/radius);
+            const speed = Math.floor(Math.random() * (10 - (-10) + 1)) + (-10);
+
+            // It might be possible once the asteroid is added, the next x and y will be out of screen
+            // This creates a flicker on the screen
+            // pre-check next x and y of asteroid to avoid flicker on screen
+            const _x = Math.floor(x + speed*Math.sin(0));
+            const _y = Math.floor(y - speed*Math.cos(0));
+
+            if(_x > 0 && _y > 0 && _x < canvas.width && _y < canvas.height)
+                return new Asteroid(canvas, _x, _y, radius, vertices, rotationFactor, speed);
+        }
+
+        // start playing game. 
+        // check the missiles and asteroids collision
+        // increment score
+        function playGame(){
+            // check for missile colliding with asteroids to increment score
+            checkMissileAndAsteroidCollision();
+
+            // check for spaceship colliding with asteroids for game over
+            checkSpaceshipAndAsteroidCollision();
+        }
+
+        function checkMissileAndAsteroidCollision(){
+            for(let i = 0; i < missiles.length; i++){
+                for(let j = 0; j < asteroids.length; j++){
+
+                    // check if asteroid and missile are colliding
+                    if(isMissileCollidingWithAsteroid(missiles[i], asteroids[j])){
+                        
+                        // increment score
+                        // larger point for destroying larger asteroids
+                        incrementScore(Math.ceil(asteroids[j].radius));
+
+                        // remove asteroid and missile if they are colliding
+                        asteroids.splice(j, 1);
+                        missiles.splice(i, 1);
+
+                    }
+
+                }
+            }
+        }
+
+        // check if asteroid and missiles are colliding
+        // distance between two point is given by (d)^2 = (x1 - x2)^2 + (y1 - y2)^2
+        // for us missiles and asteroid are colliding if they touch each other or intersect
+        // hence the min distance between asteroid and missiles is missile.radius + asteroid.radius
+        // if the distance between center is less than addition of their radius, they are colliding
+        function isMissileCollidingWithAsteroid(missile, asteroid){
+            if(missile && asteroid){
+                const x2 = (missile.x - asteroid.x) * (missile.x - asteroid.x);
+                const y2 = (missile.y - asteroid.y) * (missile.y - asteroid.y);
+                const r2 = (missile.radius + asteroid.radius) * (missile.radius + asteroid.radius);
+
+                return Math.floor(x2 + y2 - r2) <= 0 ? true : false;
+            }
+            return false;
+        }
+
+        // check whether spaceship has collided with asteroid
+        // this will be our game over condition
+        function checkSpaceshipAndAsteroidCollision(){
+
+            for(let i = 0; i < asteroids.length; i++){
+
+                // if spaceship has collided with asteroids, then it's game over condition
+                if(isSpaceshipCollidingWithAsteroid(ship, asteroids[i])){
+
+                    //GAME OVER
+                    console.log('GAME OVER');
+                    alert('GAME OVER');
+
+                }
+
+            }
+
+        }
+
+        // check if spaceship and asteroid are colliding using similar logic for missile and asteroids
+        function isSpaceshipCollidingWithAsteroid(ship, asteroid){
+
+            // since we have considered spaceship as equilateral traingle
+            // i will find the centroid of circle surrounding the spaceship
+            // and then use similar logic to find collision of asteroid and spaceship
+            // this approach is bit erroneous, but will it's ok for now 
+            
+            // Three vertex of ship
+            // (ship.x + 20, ship.y + 0)
+            // (ship.x + 0, ship.y - 36)
+            // (ship.x - 20, ship.y + 0)
+            // cx = (ship.x + 20 + ship.x + 0 + ship.x - 20)/3 = ship.x
+            // cy = (ship.y + 0 + ship.y - 36 + ship.y + 0)/3 = ship.y - 12
+
+
+            [cx, cy] = [ship.x, ship.y - 12];  // find center x and center y of spaceship
+            const radiusOfSpaceShip = 24;   // approx distance from center of ship to any vertex using distance formula
+
+            if(asteroid){
+                const x2 = (cx - asteroid.x) * (cx - asteroid.x);
+                const y2 = (cy - asteroid.y) * (cy - asteroid.y);
+                const r2 = (radiusOfSpaceShip + asteroid.radius) * (radiusOfSpaceShip + asteroid.radius);
+
+                return Math.floor(x2 + y2 - r2) <= 0 ? true : false;
+            }
+
+            return false;
+        }
+
+        // print the score 
+        function incrementScore(point){
+            score += point;
+            console.log(`Current Score = ${score}`);
+        }
+
+        window.addEventListener('keydown', function(event){
+            switch(event.keyCode){
+                case 32:
+                    //space button
+                    ship.shoot(); 
+                    break;
+                case 37:
+                    // left arrow key
+                    ship.rotate(-15);
+                    break;
+                case 38: 
+                    // up arrow key
+                    // move ship in up direction
+                    ship.start();
+                    break;
+                case 39:
+                    // right arrow key
+                    ship.rotate(15);
+                    break;
+                case 40: 
+                    // down arrow key
+                    // move ship in down direction
+                    // but we dont want the ship to move backward
+                    // ship.move(-4);
+                    break;
+            }
+        });
+
+        window.addEventListener('keyup', function(event){
+            switch(event.keyCode){
+                case 37:
+                    // left arrow key
+                    break;
+                case 38: 
+                    // up arrow key
+                    // set ship speed back to normal
+                    ship.stop();
+                    break;
+                case 39:
+                    // right arrow key
+                    break;
+                case 40: 
+                    break;
+            }
+        });
+
+    </script>
+
+</body>
+</html>
