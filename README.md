@@ -18,14 +18,10 @@ Asteroid Shooting Game using Javascript
   * [Check Collision of Missile and Asteroid](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part5-missilehittingasteroid)
   * [Check Collision of Spaceship and Asteroid](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part5.1-asteroidhittingship)
 * Completing the Game
-  * [How to Play]()
-  * [Display Score]()
+  * [How to Play](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part6-howtoplay)
+  * [Display Score](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part6.1-displayscore)
   * [Display Game Over]()
 
 ## Output
 ![demo1.gif](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/demo1.gif)
-<img src="game1.png" data-canonical-src="game1.png" alt="Game1.png"/>
-<img src="game2.png" data-canonical-src="game2.png" alt="Game2.png"/>
-<img src="game3.png" data-canonical-src="game3.png" alt="Game3.png"/>
-<img src="game4.png" data-canonical-src="game4.png" alt="Game4.png"/>
-<img src="game5.png" data-canonical-src="game5.png" alt="Game5.png"/>
+![demo2.gif](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/demo2.gif)
