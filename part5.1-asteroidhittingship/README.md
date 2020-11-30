@@ -27,7 +27,7 @@ function checkSpaceshipAndAsteroidCollision(){
 
 ![distancebetweencircle.png](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/part5-missilehittingasteroid/distancebetweencircle.png)
 ### 
-Use Distance Formula To Check If Missile and Asteroid Are Colliding
+Use Distance Formula To Check If Spaceship and Asteroid Are Colliding
 
 ```
 // check if spaceship and asteroid are colliding using similar logic for missile and asteroids
