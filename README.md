@@ -20,8 +20,9 @@ Asteroid Shooting Game using Javascript
 * Completing the Game
   * [How to Play](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part6-howtoplay)
   * [Display Score](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part6.1-displayscore)
-  * [Display Game Over]()
+  * [Display Game Over](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part6.2-rendergameover)
 
 ## Output
 ![demo1.gif](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/demo1.gif)
 ![demo2.gif](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/demo2.gif)
+![output3.png](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/output3.png)
