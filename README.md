@@ -16,7 +16,7 @@ Asteroid Shooting Game using Javascript
   * [Add Multiple Asteroids](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part4.1-addingmultipleasteriods)
 * Play Game
   * [Check Collision of Missile and Asteroid](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part5-missilehittingasteroid)
-  * [Check Collision of Spaceship and Asteroid]()
+  * [Check Collision of Spaceship and Asteroid](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part5.1-asteroidhittingship)
 
 ## Output
 ![demo1.gif](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/demo1.gif)
