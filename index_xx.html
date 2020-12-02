@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceInvaders</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex;">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script>
+        const maxRadius = 100;
+        const minRadius = 20;
+        
+        var missiles = [];
+        var asteroids = [];
+        var missileAppender = 0;
+        var score = 0;
+        var isGameOver = false;
+
+        const canvas = document.getElementById("canvas");
+        const context = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        var currentX = canvas.width/2;
+        var currentY = canvas.height/2;
+        var currentAngle = 0;
+
+        const ship = new Ship(canvas, currentX, currentY, currentAngle);
+
+        setInterval(function(){
+            render();
+        });
+
+        //calculate distance between missile and asteroid to determine collision
+        //Distance formula d^2 = (x2 - x1)^2 + (y2 - y1)^2
+        function missileAndAsteroidCollisionDetection(){
+            for(let i = 0; i < asteroids.length; i++){
+                for(let j = 0; j < missiles.length; j++){
+                    const asteroid = asteroids[i];
+                    const missile = missiles[j];
+
+                    if(asteroid && missile){
+                        const x2 = (asteroid.x - missile.x) * (asteroid.x - missile.x);
+                        const y2 = (asteroid.y - missile.y) * (asteroid.y - missile.y);
+                        const r2 = (asteroid.radius + missile.radius) * (asteroid.radius + missile.radius);
+
+                        if(Math.floor(x2 + y2 -r2) <= 0){
+                            const newasteroid = asteroid.burst();
+
+                            if(newasteroid.radius > minRadius)
+                                asteroids.push(newasteroid);
+                            else
+                                asteroids.splice(i, 1);
+
+                            //remove missile or destroy missile
+                            missiles.splice(j,1);
+                            score = score + 5;
+                        }
+                    }
+                }   
+            }
+        }
+
+        //shipRadius is radius circumcircle of ship
+        //(shipX, shipY) is centroid of ship
+        function shipAndAsteroidCollisionDetection(){
+            for(let i = 0; i < asteroids.length; i++){
+                const asteroid = asteroids[i];
+                const shipRadius = 20;
+                const shipX = ship.x;
+                const shipY = ship.y - (20/Math.sqrt(3));
+
+                const x2 = (asteroid.x - shipX) * (asteroid.x - shipX);
+                const y2 = (asteroid.y - shipY) * (asteroid.y - shipY);
+                const d2 = (asteroid.radius + shipRadius) * (asteroid.radius + shipRadius);
+
+                if(Math.floor(x2 + y2 -d2) <= 0){{
+                        isGameOver = true;
+                    }
+                }
+            }
+        }
+
+        function render(){
+            //clear
+            context.clearRect(0,0, canvas.width, canvas.height);
+
+            if(isGameOver){
+                renderGameOver();
+                return;
+            }
+            
+            renderScore();
+            renderControls();
+
+            //draw ship
+            ship.render();
+            
+            //draw missiles
+            missiles.forEach(missile => {
+                missile.render();
+            });
+
+            //draw asteroids
+            asteroids.forEach((asteroid) => {
+                asteroid.render();
+            });
+
+            //check boundaries
+            //eliminate if centre of missile has left the screen
+            //since the missile are very small it's doesn't matter
+            missiles = missiles.filter((missile) => {
+                return missile.x > 0 && 
+                    missile.y > 0 && 
+                    missile.x < canvas.width &&  
+                    missile.y < canvas.height
+            });
+
+            //check for boundaries
+            //eliminate if the back of asteriod has left the screen
+            asteroids = asteroids.filter((asteroid) => {
+                return asteroid.x > (0 - asteroid.radius) && 
+                    asteroid.y > (0 - asteroid.radius) && 
+                    asteroid.x < (canvas.width + asteroid.radius) &&  
+                    asteroid.y < (canvas.height + asteroid.radius)
+            });
+
+            //begin with n number of asteroid
+            while(asteroids.length < 15){
+                const asteroid = getAsteroid();    
+                if(asteroid)
+                    asteroids.push(asteroid);
+            }
+
+            missileAndAsteroidCollisionDetection();
+            shipAndAsteroidCollisionDetection();
+        }
+
+        function renderPlayAgain(){
+            context.beginPath();
+            context.lineWidth = 3;
+            context.arc(canvas.width/2, canvas.height/2, 150, 0, 2*Math.PI);
+            context.closePath();
+            context.strokeStyle = "white";
+            context.stroke();
+
+            context.beginPath();
+            context.lineWidth = 5;
+            context.moveTo(canvas.width/2 + 101, canvas.height/2 - 5);
+            context.lineTo(canvas.width/2 + 80, canvas.height/2 + 20);
+            context.moveTo(canvas.width/2 + 100, canvas.height/2 - 5);
+            context.lineTo(canvas.width/2 + 120, canvas.height/2 + 20);
+            context.arc(canvas.width/2, canvas.height/2, 100, 0, 3*Math.PI/2);
+            context.strokeStyle = "white";
+            context.stroke();
+
+            context.font = "64px sans-serif";
+            context.fillStyle = "white";
+            context.textAlign = "center"
+            context.fillText(`Play Again`, canvas.width/2, canvas.height/2 + 220);
+        }
+
+        function renderScore(){
+            var textScore = `Score = ${score}`;
+            var textScoreWidth = context.measureText(textScore).width;
+            context.font = "24px Arial";
+            context.fillStyle = "white";
+            context.textAlign = "center";
+            context.fillText(textScore, canvas.width - (textScoreWidth/2) - 30, 30);
+        }
+
+        function renderGameOver(){
+            context.font = "64px sans-serif";
+            context.fillStyle = "white";
+            context.textAlign = "center"
+            context.fillText(`Game Over`, canvas.width/2, canvas.height/4);
+            context.fillText(`Score = ${score}`, canvas.width/2, canvas.height/4 + 64);
+
+            renderPlayAgain();
+        }
+
+        function renderControls(){
+            const x = canvas.width/2;
+            context.font = "24px Arial";
+            context.textAlign = "center";
+            context.fillStyle = "white";
+            context.fillText(`[↑] [↓] [→] [←] to move`, x, 30);
+            context.fillText(`Hit [space] to fire`, x, 30 + 24);
+        }
+
+        function Ship(canvas, x, y, angle){
+            this.canvas = canvas;
+            this.context = canvas.getContext('2d');
+            this.x = x;
+            this.y = y;
+            this.angle = angle;
+            this.isShooting = false;
+            this.shipHeight = Math.sqrt(3)/2*40;
+
+            this.render = function(){
+                this.draw();
+            }
+
+            this.draw = function() {
+                //save current state
+                this.context.save();
+                
+                //move the origin and rotate the axis
+                this.context.translate(this.x, this.y);
+                this.context.rotate(this.angle);
+                
+                //draw ship
+                this.context.beginPath();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(20, 0);
+                this.context.lineTo(0, -Math.sqrt(3)/2*40);
+                this.context.lineTo(-20, 0);
+                this.context.closePath();
+                this.context.fillStyle = "white";
+                this.context.fill();
+
+                //draw fake flames
+                this.context.beginPath();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(8, 0);
+                this.context.lineTo(0, Math.sqrt(3)/2*16);
+                this.context.lineTo(-8, 0);
+                this.context.closePath();
+                this.context.fillStyle = "yellow";
+                this.context.fill();
+
+                this.context.beginPath();
+                this.context.moveTo(0, 0);
+                this.context.lineTo(5, 0);
+                this.context.lineTo(0, Math.sqrt(3)/2*10);
+                this.context.lineTo(-5, 0);
+                this.context.closePath();
+                this.context.fillStyle = "red";
+                this.context.fill();
+
+                //restore the previous state
+                this.context.translate(-this.x, -this.y);
+                this.context.restore();
+            }
+
+            this.move = function(dl) {
+                const nextX = this.x - dl*Math.sin(this.angle);
+                const nextY = this.y + dl*Math.cos(this.angle);
+                
+                //check boundaries
+                if(nextX < (0 + this.shipHeight) || 
+                    nextY < (0 + this.shipHeight) || 
+                    nextX > (this.canvas.width - this.shipHeight) || 
+                    nextY > (this.canvas.height - this.shipHeight))
+                    return;
+
+                this.x = nextX;
+                this.y = nextY;
+                currentX = this.x;
+                currentY = this.y;
+            }
+
+            this.rotate = function(dr){
+                this.angle = this.angle + dr;
+                currentAngle = this.angle;
+            }
+
+            this.shoot = function(){
+                this.isShooting = !this.isShooting;         
+                missiles.push(new Missile(canvas, this.x, this.y, this.angle));
+            }
+
+            //reset ship to center
+            this.reset = function(){
+                this.x = this.canvas.width/2;
+                this.y = this.canvas.height/2;
+                this.angle = 0;
+                currentX = this.x;
+                currentY = this.y;
+                currentAngle = this.angle;
+            }
+        }
+
+        function Missile(canvas, x, y, angle){
+            this.name = name;
+            this.canvas = canvas;
+            this.x = x;
+            this.y = y;
+            this.angle = angle
+            this.radius = 2;
+            this.context = canvas.getContext('2d');
+
+            this.render = function(){
+                this.update();
+                this.draw();
+            }
+
+            this.update = function(){
+                this.x = this.x + 5*Math.sin(this.angle);
+                this.y = this.y - 5*Math.cos(this.angle);
+            }
+
+            this.draw = function(){
+                //save current state
+                this.context.save();
+
+                //move the origin and rotate the axis
+                this.context.translate(this.x, this.y);
+                this.context.rotate(this.angle);
+                
+                //draw
+                this.context.beginPath();
+                this.context.arc(0, 0, this.radius, 0, 2*Math.PI);
+                this.context.closePath();
+                this.context.fillStyle = "white";
+                this.context.fill();
+
+                //restore the previous state
+                this.context.translate(-this.x, -this.y);
+                this.context.restore();
+            }
+        }
+
+        function Asteroid(canvas, x, y, angle, radius){
+            this.canvas = canvas;
+            this.context = canvas.getContext('2d');
+            this.x = x;
+            this.y = y;
+            this.angle = angle;
+            this.radius = radius;
+            
+            this.render = function(){
+                this.update();
+                this.draw();
+            }
+
+            this.update = function(){
+                this.x = this.x + 2*Math.sin(this.angle);
+                this.y = this.y - 2*Math.cos(this.angle);
+            }
+
+            this.draw = function(){
+                //save current state
+                this.context.save();
+
+                //move the origin and rotate the axis
+                this.context.translate(this.x, this.y);
+                this.context.rotate(this.angle);
+                
+                //draw
+                this.context.beginPath();
+                this.context.lineWidth = 5;
+                this.context.arc(0, 0, this.radius, 0, 2*Math.PI);
+                this.context.closePath();
+                this.context.strokeStyle = "white";
+                this.context.stroke();
+
+                //restore the previous state
+                this.context.translate(-this.x, -this.y);
+                this.context.restore();
+            }
+
+            this.burst = function(){
+                this.radius = this.radius/2;
+                this.x = this.x + 2.5*this.radius*Math.sin(this.angle);
+                this.y = this.y - 2.5*this.radius*Math.cos(this.angle);
+
+                const newx = this.x - 2.5*this.radius*Math.sin(this.angle);
+                const newy = this.y + 2.5*this.radius*Math.cos(this.angle);
+
+                return new Asteroid(this.canvas, newx, newy, -this.angle, this.radius);   
+            }
+        }
+
+        function getAsteroid(){
+            const x = Math.floor(Math.random() * (canvas.width - 0) + 1) + 0;
+            const y = Math.floor(Math.random() * (canvas.height - 0) + 1) + 0;
+            const angle = (Math.floor(Math.random() * (360 - 0) + 1) + 0) * (Math.PI/180);
+            const radius = Math.floor(Math.random() * (maxRadius - minRadius) + 1) + minRadius;
+            
+            if(Math.abs(x + radius - currentX) > 100 &&
+                Math.abs(y + radius - currentY) > 100)
+                return new Asteroid(canvas, x, y, angle, radius);
+        }
+
+        window.addEventListener('keydown', function(event) {
+            switch(event.keyCode) {
+                case 32:
+                    //space button
+                    ship.shoot(); 
+                    break;
+                case 37:
+                    //left arrow key
+                    ship.rotate(-Math.PI/16); 
+                    break;
+                case 38: 
+                    //up arrow key
+                    ship.move(-8);
+                    break;
+                case 39:
+                    //right arrow key
+                    ship.rotate(Math.PI/16);
+                    break;
+                case 40: 
+                    //down arrow key
+                    //ship.move(8);
+                    break;
+            }
+            //render();
+        });
+
+        window.addEventListener('resize', function(event){
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        canvas.addEventListener('click', function(event){
+                if(isGameOver){
+                    const mouseX = event.clientX;
+                    const mouseY = event.clientY;
+                    const centerX = canvas.width/2;
+                    const centerY = canvas.height/2;
+
+                    const x2 = (mouseX - centerX) * (mouseX - centerX);
+                    const y2 = (mouseY - centerY) * (mouseY - centerY);
+                    
+                    //Reset only if clicked inside play again button
+                    if(x2 + y2 - (150*150) < 0){
+                        console.log('Play Again');
+                        isGameOver = false;
+                        asteroids = []; //clear asteroids
+                        missiles = []; //clear missiles
+                        ship.reset(); //reset ship to center
+                        score = 0; //reset score to 0
+                    }
+                }
+            });
+
+    </script>
+</body>
+</html>

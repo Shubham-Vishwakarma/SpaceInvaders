@@ -112,7 +112,7 @@
 
         // Render How to Play Move Controls at bottom left of screen
         function renderMoveControl(){
-            context.font = "24px Arial";
+            context.font = "16pt Arial";
             context.textBaseAlign = "middle"
             context.textAlign = "center";
             context.fillStyle = "white";
@@ -121,7 +121,7 @@
 
         // Render How to Play Shoot Controls at bottom right of screen
         function renderShootControl(){
-            context.font = "24px Arial";
+            context.font = "16pt Arial";
             context.textBaseAlign = "middle"
             context.textAlign = "center";
             context.fillStyle = "white";
@@ -131,7 +131,7 @@
         // Render Score
         function renderScore(){
             context.fillStyle = "white";
-            context.font = "36px Arial";
+            context.font = "16pt Arial";
 
             var textString = `Score = ${score}`;
             var textWidth = context.measureText(textString).width;
@@ -142,7 +142,7 @@
         // Render High Score
         function renderHighScore(){
             context.fillStyle = "white";
-            context.font = "36px Arial";
+            context.font = "16pt Arial";
 
             var textString = `High Score = ${highScore}`;
             var textWidth = context.measureText(textString).width;
@@ -167,7 +167,7 @@
         function renderGameOver(){
 
             context.fillStyle = "white";
-            context.font = "64px Arial";
+            context.font = "bold 64pt Arial";
 
             var gameOverTextString = `Game Over`;
             var gameOverTextWidth = context.measureText(gameOverTextString).width;
