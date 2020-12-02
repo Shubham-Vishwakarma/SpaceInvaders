@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explode Asteroid</title>
+    <title>SpaceInvaders</title>
 
     <style>
 
@@ -45,6 +45,9 @@
         //define score
         var score = 0;
 
+        // define high score
+        var highScore = getHighScore();
+
         var requestAnimationFrameId;
 
         // Create Ship Object and render it at center of screen
@@ -65,6 +68,7 @@
             renderMoveControl();
             renderShootControl();
             renderScore();
+            renderHighScore();
 
             // Render Ship
             ship.render();
@@ -132,7 +136,31 @@
             var textString = `Score = ${score}`;
             var textWidth = context.measureText(textString).width;
 
-            context.fillText(textString, (canvas.width/2) - (textWidth/2), 50);
+            context.fillText(textString, 150, 50);
+        }
+
+        // Render High Score
+        function renderHighScore(){
+            context.fillStyle = "white";
+            context.font = "36px Arial";
+
+            var textString = `High Score = ${highScore}`;
+            var textWidth = context.measureText(textString).width;
+
+            context.fillText(textString, canvas.width - 200, 50);
+        }
+
+        // get high score
+        function getHighScore(){
+            let highScore = localStorage.getItem('spaceInvadersHighScore');
+            return highScore == null ? 0 : parseInt(highScore);   
+        }
+
+        // set high score
+        function setHighScore(score){
+            if(score > highScore){
+                localStorage.setItem('spaceInvadersHighScore', score);
+            }
         }
 
         // Render Game Over
@@ -490,6 +518,9 @@
                     cancelAnimationFrame(requestAnimationFrameId);
                     
                     renderGameOver();
+                    
+                    // set high score
+                    setHighScore(score);
 
                 }
 
@@ -529,7 +560,7 @@
 
         // print the score 
         function incrementScore(point){
-            score += point;
+            score += Math.floor(point/10);
             console.log(`Current Score = ${score}`);
         }
 

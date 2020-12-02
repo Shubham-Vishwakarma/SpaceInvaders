@@ -1,7 +1,7 @@
 # SpaceInvaders
 Asteroid Shooting Game using Javascript
 
-## Part 7: Save High Score
+## Part 8: Save High Score
 
 ### Use localStorage to Save High Score
 ```
