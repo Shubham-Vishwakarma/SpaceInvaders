@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpaceInvaders</title>
+    <title>Explode Asteroid</title>
 
     <style>
 
@@ -372,11 +372,38 @@
                     break;
             }
 
+            // get new asteroid
+            return getAsteroid(x, y, 100, 25);
+
+        }
+
+        // Once missile is collided with asteroid. Break the asteroid into two parts
+        // each with radius between radius/2 to radius/4
+        // one moving in the same direction as original
+        // and another moving in opposite direction        
+        function explodeAsteroid(asteroid){
+
+            var tempAsteroids = []
+
+            // get first small asteroid
+            const firstAsteroid = getAsteroid(asteroid.x, asteroid.y, asteroid.radius/2, asteroid.radius/4);
+            if(firstAsteroid && firstAsteroid.radius > 25) tempAsteroids.push(firstAsteroid);
+
+            // get second small asteroid
+            const secondAsteroid = getAsteroid(asteroid.x, asteroid.y, asteroid.radius/2, asteroid.radius/4);
+            if(secondAsteroid && secondAsteroid.radius > 25) tempAsteroids.push(secondAsteroid);
+
+            return tempAsteroids;
+        }
+
+        // Return a new asteroid with some random values
+        function getAsteroid(x, y, minRadius, maxRadius){
+            
             // generate random number of vertices to give some shape to asteroid polygon
             const vertices = Math.floor(Math.random() * (10 - 7 + 1)) + 7;
 
             // generate random radius between minRadius and maxRadius
-            const radius = Math.floor(Math.random() * (100 - 25 + 1)) + 25;
+            const radius = Math.floor(Math.random() * (maxRadius - minRadius + 1)) + minRadius;
 
             // generate random rotation angle and speed for asteroid
             const rotationFactor = Math.random() * (1/radius - (-1/radius)) + (-1/radius);
@@ -390,6 +417,7 @@
 
             if(_x > 0 && _y > 0 && _x < canvas.width && _y < canvas.height)
                 return new Asteroid(canvas, _x, _y, radius, vertices, rotationFactor, speed);
+
         }
 
         // start playing game. 
@@ -413,6 +441,10 @@
                         // increment score
                         // larger point for destroying larger asteroids
                         incrementScore(Math.ceil(asteroids[j].radius));
+
+                        // break asteroid into small asteroids
+                        const smallAsteroids = explodeAsteroid(asteroids[j]);
+                        smallAsteroids.forEach((asteroid) => (asteroids.push(asteroid)));
 
                         // remove asteroid and missile if they are colliding
                         asteroids.splice(j, 1);

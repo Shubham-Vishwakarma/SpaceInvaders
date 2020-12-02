@@ -21,6 +21,8 @@ Step by Step Building Asteroid Shooting Game using Javascript
   * [How to Play](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part6-howtoplay)
   * [Display Score](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part6.1-displayscore)
   * [Display Game Over](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part6.2-rendergameover)
+* Optional
+  * [Explode Asteroid](https://github.com/Shubham-Vishwakarma/SpaceInvaders/tree/main/part7-explodeasteroids)
 
 ## Output
 ![demo1.gif](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/demo1.gif)
