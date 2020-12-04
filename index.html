@@ -48,16 +48,22 @@
         // define high score
         var highScore = getHighScore();
 
-        var requestAnimationFrameId;
+        // define isGameOver
+        var isGameOver = false;
 
         // Create Ship Object and render it at center of screen
-        const ship = new Ship(canvas, canvas.width/2, canvas.height/2, 0);
+        var ship = new Ship(canvas, canvas.width/2, canvas.height/2, 0);
         
         render();
-    
+
         function render() {
 
-            requestAnimationFrameId = requestAnimationFrame(render);
+            if(isGameOver) { 
+                requestAnimationFrame(renderGameOver);
+                return;
+            }
+
+            requestAnimationFrame(render);
             
             // clear the canvas
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -172,13 +178,39 @@
             var gameOverTextString = `Game Over`;
             var gameOverTextWidth = context.measureText(gameOverTextString).width;
 
-            context.fillText(gameOverTextString, (canvas.width/2) - (gameOverTextWidth/2), canvas.height/2 - 32);
+            context.fillText(gameOverTextString, (canvas.width/2) - (gameOverTextWidth/2), canvas.height/2 - 36);
 
             var yourScoreTextString = `Your Score = ${score}`;
             var yourScoreTextWidth = context.measureText(yourScoreTextString).width;
 
-            context.fillText(yourScoreTextString, (canvas.width/2) - (yourScoreTextWidth/2), canvas.height/2 + 32);
+            context.fillText(yourScoreTextString, (canvas.width/2) - (yourScoreTextWidth/2), canvas.height/2 + 36);
 
+            renderPlayAgain(false);
+        }
+
+        // Render Play Again
+        function renderPlayAgain(isInside){
+            
+            context.strokeStyle = "white"
+            context.fillStyle = isInside ? "black" : "white";
+            context.fillRect(canvas.width/2 - 200 , canvas.height/2 + 64, 400, 100);
+            context.strokeRect(canvas.width/2 - 200 , canvas.height/2 + 64, 400, 100);
+
+            context.font = "bold 32pt Arial";
+            var playAgainTextString = `Play Again!!!`;
+            var playAgainTextWidth = context.measureText(playAgainTextString).width;
+
+            context.fillStyle = isInside ? "white" : "black";
+            context.fillText(playAgainTextString, (canvas.width/2) - (playAgainTextWidth/2), canvas.height/2 + 125);
+
+        }
+
+        // check if mouse pointer is over play again button
+        function isInsidePlayAgainButton(x, y){
+            return (x > canvas.width/2 - 200) && 
+                (x < canvas.width/2 + 200) &&
+                (y > canvas.height/2 + 64) &&
+                (y < canvas.height/2 + 164);
         }
 
         // The Ship
@@ -509,15 +541,10 @@
                 // if spaceship has collided with asteroids, then it's game over condition
                 if(isSpaceshipCollidingWithAsteroid(ship, asteroids[i])){
 
+                    isGameOver = true;
+
                     //GAME OVER
                     console.log('GAME OVER');
-                    
-                    // restore the last saved context
-                    context.restore();
-
-                    cancelAnimationFrame(requestAnimationFrameId);
-                    
-                    renderGameOver();
                     
                     // set high score
                     setHighScore(score);
@@ -564,6 +591,26 @@
             console.log(`Current Score = ${score}`);
         }
 
+        function resetGame(){
+            // clear all missiles
+            missiles = [];
+
+            // clear all asteroids
+            asteroids = [];
+
+            // reset score to 0
+            score = 0;
+
+            // set isGameOver to false
+            isGameOver = false;
+
+            // re-create ship
+            ship = new Ship(canvas, canvas.width/2, canvas.height/2, 0);
+
+            // call render method to display
+            render();
+        }
+
         window.addEventListener('keydown', function(event){
             switch(event.keyCode){
                 case 32:
@@ -608,6 +655,33 @@
                 case 40: 
                     break;
             }
+        });
+
+        // setup listener to animate on move inside play again button
+        canvas.addEventListener('mousemove', function(event){
+            
+            if(isGameOver && isInsidePlayAgainButton(event.clientX, event.clientY)){
+                console.log('Inside');
+                renderPlayAgain(true);
+                document.body.style.cursor = "pointer";
+                return;
+            }
+            else if (isGameOver){
+                renderPlayAgain(false);
+            }
+
+            document.body.style.cursor = "auto";
+
+        });
+
+        // setup listener on mouse click to restart game
+        canvas.addEventListener('click', function(event){
+
+            if(isGameOver && isInsidePlayAgainButton(event.clientX, event.clientY)){
+                isGameOver = false;
+                resetGame();
+            }
+
         });
 
     </script>
