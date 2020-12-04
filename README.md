@@ -29,3 +29,4 @@ Step by Step Building Asteroid Shooting Game using Javascript
 ![demo1.gif](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/demo1.gif)
 ![demo2.gif](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/demo2.gif)
 ![output3.png](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/output3.png)
+![gameover.png](https://github.com/Shubham-Vishwakarma/SpaceInvaders/blob/main/gameover.png)
