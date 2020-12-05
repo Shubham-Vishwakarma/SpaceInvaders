@@ -16,8 +16,16 @@ function Ship(canvas,x, y){
     
     //update x and y co-ordinate of ship
     this.move = function(){
-        this.x = Math.floor(this.x + this.speed*Math.sin(this.angle));
-        this.y = Math.floor(this.y - this.speed*Math.cos(this.angle));
+        const nextX = Math.floor(this.x + this.speed*Math.sin(this.angle));
+        const nextY = Math.floor(this.y - this.speed*Math.cos(this.angle));
+
+        // check boundary condition
+        if(nextX > 0 && nextX < canvas.width &&
+            nextY > 0 && nextY < canvas.height)
+        {
+            this.x = nextX;
+            this.y = nextY;
+        }
     }
 
 }
