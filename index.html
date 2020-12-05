@@ -29,6 +29,8 @@
     <script type="text/javascript" src="Missile.js"></script>
     <script type="text/javascript" src="Asteroid.js"></script>
     <script type="text/javascript" src="AsteroidHelper.js"></script>
+    <script type="text/javascript" src="ViewHelper.js"></script>
+    <script type="text/javascript" src="ScoreCalculator.js"></script>
 
     <script>
 
@@ -51,7 +53,7 @@
         var score = 0;
 
         // define high score
-        var highScore = getHighScore();
+        var highScore = ScoreCalculator.getHighScore();
 
         // define isGameOver
         var isGameOver = false;
@@ -76,10 +78,10 @@
             //save the current context
             context.save();
 
-            renderMoveControl();
-            renderShootControl();
-            renderScore();
-            renderHighScore();
+            renderMoveControl(canvas, context);
+            renderShootControl(canvas, context);
+            renderScore(canvas, context, score);
+            renderHighScore(canvas, context, highScore);
 
             // Render Ship
             ship.render();
@@ -121,95 +123,6 @@
 
         }
 
-        // Render How to Play Move Controls at bottom left of screen
-        function renderMoveControl(){
-            context.font = "16pt Arial";
-            context.textBaseAlign = "middle"
-            context.textAlign = "center";
-            context.fillStyle = "white";
-            context.fillText(`Use [ ↑ ]  [ ↓ ]  [ → ]  [ ← ] to move`, 200, canvas.height - 30);
-        }
-
-        // Render How to Play Shoot Controls at bottom right of screen
-        function renderShootControl(){
-            context.font = "16pt Arial";
-            context.textBaseAlign = "middle"
-            context.textAlign = "center";
-            context.fillStyle = "white";
-            context.fillText(`Hit [ Space ] to fire`, canvas.width - 120, canvas.height - 30);
-        }
-
-        // Render Score
-        function renderScore(){
-            context.fillStyle = "white";
-            context.font = "16pt Arial";
-
-            var textString = `Score = ${score}`;
-            var textWidth = context.measureText(textString).width;
-
-            context.fillText(textString, 150, 50);
-        }
-
-        // Render High Score
-        function renderHighScore(){
-            context.fillStyle = "white";
-            context.font = "16pt Arial";
-
-            var textString = `High Score = ${highScore}`;
-            var textWidth = context.measureText(textString).width;
-
-            context.fillText(textString, canvas.width - 200, 50);
-        }
-
-        // get high score
-        function getHighScore(){
-            let highScore = localStorage.getItem('spaceInvadersHighScore');
-            return highScore == null ? 0 : parseInt(highScore);   
-        }
-
-        // set high score
-        function setHighScore(score){
-            if(score > highScore){
-                localStorage.setItem('spaceInvadersHighScore', score);
-            }
-        }
-
-        // Render Game Over
-        function renderGameOver(){
-
-            context.fillStyle = "white";
-            context.font = "bold 64pt Arial";
-
-            var gameOverTextString = `Game Over`;
-            var gameOverTextWidth = context.measureText(gameOverTextString).width;
-
-            context.fillText(gameOverTextString, (canvas.width/2) - (gameOverTextWidth/2), canvas.height/2 - 36);
-
-            var yourScoreTextString = `Your Score = ${score}`;
-            var yourScoreTextWidth = context.measureText(yourScoreTextString).width;
-
-            context.fillText(yourScoreTextString, (canvas.width/2) - (yourScoreTextWidth/2), canvas.height/2 + 36);
-
-            renderPlayAgain(false);
-        }
-
-        // Render Play Again
-        function renderPlayAgain(isInside){
-            
-            context.strokeStyle = "white"
-            context.fillStyle = isInside ? "black" : "white";
-            context.fillRect(canvas.width/2 - 200 , canvas.height/2 + 64, 400, 100);
-            context.strokeRect(canvas.width/2 - 200 , canvas.height/2 + 64, 400, 100);
-
-            context.font = "bold 32pt Arial";
-            var playAgainTextString = `Play Again!!!`;
-            var playAgainTextWidth = context.measureText(playAgainTextString).width;
-
-            context.fillStyle = isInside ? "white" : "black";
-            context.fillText(playAgainTextString, (canvas.width/2) - (playAgainTextWidth/2), canvas.height/2 + 125);
-
-        }
-
         // check if mouse pointer is over play again button
         function isInsidePlayAgainButton(x, y){
             return (x > canvas.width/2 - 200) && 
@@ -238,7 +151,7 @@
                         
                         // increment score
                         // larger point for destroying larger asteroids
-                        incrementScore(Math.ceil(asteroids[j].radius));
+                        score += ScoreCalculator.getScore(Math.ceil(asteroids[j].radius));
 
                         // break asteroid into small asteroids
                         const smallAsteroids = AsteroidHelper.explodeAsteroid(asteroids[j]);
@@ -285,7 +198,7 @@
                     console.log('GAME OVER');
                     
                     // set high score
-                    setHighScore(score);
+                    ScoreCalculator.setHighScore(score);
 
                 }
 
@@ -323,12 +236,6 @@
             return false;
         }
 
-        // print the score 
-        function incrementScore(point){
-            score += Math.floor(point/10);
-            console.log(`Current Score = ${score}`);
-        }
-
         function resetGame(){
             // clear all missiles
             missiles = [];
@@ -343,7 +250,7 @@
             isGameOver = false;
 
             // reset highScore
-            highScore = getHighScore();
+            highScore = ScoreCalculator.getHighScore();
 
             // re-create ship
             ship = new Ship(canvas, canvas.width/2, canvas.height/2, 0);
@@ -403,12 +310,12 @@
             
             if(isGameOver && isInsidePlayAgainButton(event.clientX, event.clientY)){
                 console.log('Inside');
-                renderPlayAgain(true);
+                renderPlayAgain(context, true);
                 document.body.style.cursor = "pointer";
                 return;
             }
             else if (isGameOver){
-                renderPlayAgain(false);
+                renderPlayAgain(context, false);
             }
 
             document.body.style.cursor = "auto";
