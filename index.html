@@ -28,6 +28,7 @@
     <script type="text/javascript" src="Ship.js"></script>
     <script type="text/javascript" src="Missile.js"></script>
     <script type="text/javascript" src="Asteroid.js"></script>
+    <script type="text/javascript" src="AsteroidHelper.js"></script>
 
     <script>
 
@@ -102,7 +103,7 @@
             asteroids.forEach((asteroid) => (asteroid.render()));
 
             // remove asteroid from array when asteroid moves out of screen
-            asteroids = asteroids.filter(function(asteroid){
+            asteroids = asteroids.filter((asteroid) => {
                 return asteroid.x > 0 &&
                 asteroid.y > 0 &&
                 asteroid.x < canvas.width &&
@@ -111,7 +112,7 @@
 
             // Keep minimum of 5 asteroids on the screen
             if(asteroids.length < 5){
-                const asteroid = getNewAsteroid();
+                const asteroid = AsteroidHelper.getNewAsteroid(canvas);
                 if(asteroid) asteroids.push(asteroid);
             }
 
@@ -217,84 +218,6 @@
                 (y < canvas.height/2 + 164);
         }
 
-        // Random int number between given range Math.floor(Math.random() * (max - min + 1)) + min;
-        // After some trial and error, decided some of the below random values
-        function getNewAsteroid(){
-
-            // determine random side of screen to begin
-            const side = Math.floor(Math.random() * (3 - 0 + 1) + 0);
-            
-            // get random x and y between screen range as start point of asteroid
-            let x = Math.floor(Math.random() * (canvas.width - 0 + 1)) + 0;
-            let y = Math.floor(Math.random() * (canvas.height - 0 + 1)) + 0;
-
-            switch(side){
-                // start from left screen
-                case 0: 
-                    x = 0;
-                    break;
-                // start from top screen
-                case 1:
-                    y = 0;
-                    break;
-                // start from right screen
-                case 2:
-                    x = canvas.width;
-                    break;
-                // start from bottom screen
-                case 3:
-                    y = canvas.height;
-                    break;
-            }
-
-            // get new asteroid
-            return getAsteroid(x, y, 100, 25);
-
-        }
-
-        // Once missile is collided with asteroid. Break the asteroid into two parts
-        // each with radius between radius/2 to radius/4
-        // one moving in the same direction as original
-        // and another moving in opposite direction        
-        function explodeAsteroid(asteroid){
-
-            var tempAsteroids = []
-
-            // get first small asteroid
-            const firstAsteroid = getAsteroid(asteroid.x, asteroid.y, asteroid.radius/2, asteroid.radius/4);
-            if(firstAsteroid && firstAsteroid.radius > 25) tempAsteroids.push(firstAsteroid);
-
-            // get second small asteroid
-            const secondAsteroid = getAsteroid(asteroid.x, asteroid.y, asteroid.radius/2, asteroid.radius/4);
-            if(secondAsteroid && secondAsteroid.radius > 25) tempAsteroids.push(secondAsteroid);
-
-            return tempAsteroids;
-        }
-
-        // Return a new asteroid with some random values
-        function getAsteroid(x, y, minRadius, maxRadius){
-            
-            // generate random number of vertices to give some shape to asteroid polygon
-            const vertices = Math.floor(Math.random() * (10 - 7 + 1)) + 7;
-
-            // generate random radius between minRadius and maxRadius
-            const radius = Math.floor(Math.random() * (maxRadius - minRadius + 1)) + minRadius;
-
-            // generate random rotation angle and speed for asteroid
-            const rotationFactor = Math.random() * (1/radius - (-1/radius)) + (-1/radius);
-            const speed = Math.floor(Math.random() * (10 - (-10) + 1)) + (-10);
-
-            // It might be possible once the asteroid is added, the next x and y will be out of screen
-            // This creates a flicker on the screen
-            // pre-check next x and y of asteroid to avoid flicker on screen
-            const _x = Math.floor(x + speed*Math.sin(0));
-            const _y = Math.floor(y - speed*Math.cos(0));
-
-            if(_x > 0 && _y > 0 && _x < canvas.width && _y < canvas.height)
-                return new Asteroid(canvas, _x, _y, radius, vertices, rotationFactor, speed);
-
-        }
-
         // start playing game. 
         // check the missiles and asteroids collision
         // increment score
@@ -318,7 +241,7 @@
                         incrementScore(Math.ceil(asteroids[j].radius));
 
                         // break asteroid into small asteroids
-                        const smallAsteroids = explodeAsteroid(asteroids[j]);
+                        const smallAsteroids = AsteroidHelper.explodeAsteroid(asteroids[j]);
                         smallAsteroids.forEach((asteroid) => (asteroids.push(asteroid)));
 
                         // remove asteroid and missile if they are colliding
