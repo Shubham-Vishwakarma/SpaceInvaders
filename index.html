@@ -6,13 +6,50 @@
     <title>SpaceInvaders</title>
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+        }
 
         /* Remove default margin and padding
         set background color as black */
-        body {
-            margin: 0;
-            padding: 0;
+        html, body {
+            height: 100%;
             background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        p, h1 {
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 24pt;
+            text-align: center;
+            padding: 4pt;
+        }
+
+        h1 {
+            font-size: 64pt;
+        }
+
+        canvas {
+            display: none;
+        }
+
+        #text {
+            display: block;
+        }
+
+        @media only screen and (min-width: 1000px){
+            canvas {
+                display: block;
+            }
+
+            #text {
+                display: none;
+            }
         }
 
     </style>
@@ -21,8 +58,12 @@
 <body>
 
     <!-- set display as flex to remove unnecessary spaces -->
-    <div style="display: flex;">
+    <div class="container">
         <canvas id="canvas"></canvas>
+        <div id="text">
+            <h1>404</h1>
+            <p>Unfortunately, Can't Load Game. Please Try Using Large Screen</p>
+        </div>
     </div>
 
     <script type="text/javascript" src="Ship.js"></script>
