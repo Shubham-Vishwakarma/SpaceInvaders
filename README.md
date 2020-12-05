@@ -2,7 +2,7 @@
 Step by Step Building Asteroid Shooting Game using Javascript
 
 ## Demo
-[Click here](https://shubham-vishwakarma.github.io/SpaceInvaders/) to Play
+[Click here](https://shubham-vishwakarma.github.io/SpaceInvaders/) to play
 
 ## Pseudocode
 * Building SpaceShip
