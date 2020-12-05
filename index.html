@@ -25,6 +25,10 @@
         <canvas id="canvas"></canvas>
     </div>
 
+    <script type="text/javascript" src="Ship.js"></script>
+    <script type="text/javascript" src="Missile.js"></script>
+    <script type="text/javascript" src="Asteroid.js"></script>
+
     <script>
 
         // get canvas element and drawing context
@@ -211,204 +215,6 @@
                 (x < canvas.width/2 + 200) &&
                 (y > canvas.height/2 + 64) &&
                 (y < canvas.height/2 + 164);
-        }
-
-        // The Ship
-        function Ship(canvas, x, y, angle){
-
-            // Initialize properties
-            // Assuming x and y as the bottom-center of ship
-            this.canvas = canvas;
-            this.context = canvas.getContext('2d');
-            this.x = x;
-            this.y = y;
-            this.angle = angle;
-            this.minSpeed = 4;
-            this.maxSpeed = 32;
-            this.speed = this.minSpeed;
-
-            this.render = function(){
-                // draw the ship at position x, y
-                this.draw();
-            }
-
-            // draw ship
-            this.draw = function(){
-                //save the current state
-                this.context.save();
-
-                // move the origin to x, y
-                this.context.translate(this.x, this.y);
-                // rotate the frame by angle in radians
-                this.context.rotate(this.angle);
-
-                // draw ship -> equilateral triangle of length 40
-                this.context.beginPath();   // start drawing
-                this.context.moveTo(0, 0);  // move to origin
-                this.context.lineTo(20, 0); 
-                this.context.lineTo(0, -36); //height of equilateral triangle
-                this.context.lineTo(-20, 0);
-                this.context.closePath();   //close the shape
-                this.context.fillStyle = "white";   //set fillstyle as white, since the background is black
-                this.context.fill();    //fill the shape
-
-                //draw fake flames
-                this.context.beginPath();
-                this.context.moveTo(0, 0);
-                this.context.lineTo(8, 0);
-                this.context.lineTo(0, 13);
-                this.context.lineTo(-8, 0);
-                this.context.closePath();
-                this.context.fillStyle = "yellow";
-                this.context.fill();
-
-                this.context.beginPath();
-                this.context.moveTo(0, 0);
-                this.context.lineTo(5, 0);
-                this.context.lineTo(0, 8);
-                this.context.lineTo(-5, 0);
-                this.context.closePath();
-                this.context.fillStyle = "red";
-                this.context.fill();
-
-                // restore the previous state
-                this.context.restore();
-
-            }
-
-            this.start = function(){
-                this.speed = this.speed + 2 <= this.maxSpeed ? this.speed + 2 : this.maxSpeed;
-                this.move();
-            }
-
-            //update x and y co-ordinate of ship
-            this.move = function(){
-
-                const nextX = Math.floor(this.x + this.speed*Math.sin(this.angle));
-                const nextY = Math.floor(this.y - this.speed*Math.cos(this.angle));
-
-                if(nextX > 0 && nextX < canvas.width &&
-                    nextY > 0 && nextY < canvas.height)
-                {
-                    this.x = nextX;
-                    this.y = nextY;
-                }
-
-            }
-
-            this.stop = function(){
-                while(this.speed <= this.minSpeed){
-                    this.speed = this.speed/2;
-                    this.x = Math.floor(this.x + this.speed*Math.sin(this.angle));
-                    this.y = Math.floor(this.y - this.speed*Math.cos(this.angle));
-                }
-                this.speed = this.minSpeed;
-            }
-
-            // convert degree to radians
-            this.rotate = function(dr){
-                this.angle = this.angle + Math.PI/180*dr;
-            }
-
-            this.shoot = function(){
-                missiles.push(new Missile(this.canvas, this.x, this.y, this.angle))
-            }
-        }
-
-        // The Missile
-        function Missile(canvas, x, y, angle){
-            this.canvas = canvas;
-            this.context = canvas.getContext('2d');
-            this.x = x;
-            this.y = y;
-            this.angle = angle;
-            this.radius = 2;
-
-            this.render = function(){
-                this.update();
-                this.draw();
-            }
-
-            this.draw = function(){
-                // save context
-                this.context.save();
-
-                // draw missile
-                this.context.beginPath();
-                this.context.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
-                this.context.closePath();
-                this.context.fillStyle = "white";
-                this.context.fill();
-
-                // restore context
-                this.context.restore();
-            }
-
-            this.update = function(){
-                this.x = Math.floor(this.x + 10*Math.sin(this.angle));
-                this.y = Math.floor(this.y - 10*Math.cos(this.angle));
-            }
-        }
-
-        // The Asteroid
-        function Asteroid(canvas, x, y, radius, vertices, rotationFactor, speed){
-            this.canvas = canvas;
-            this.context = canvas.getContext('2d');
-            this.x = x;
-            this.y = y;
-            this.radius = radius;
-            this.vertices = vertices;
-            this.angle = 0;
-            this.rotationFactor = rotationFactor;
-            this.speed = speed;
-
-            this.render = function(){
-                this.move();
-                this.rotate();
-                this.draw();
-            }
-
-            // draw asteroid
-            this.draw = function(){
-                // save the current context
-                this.context.save();
-
-                this.context.translate(this.x, this.y);
-                this.context.rotate(this.angle);
-
-                // draw asteroid
-                this.context.strokeStyle = 'white';
-                this.context.lineWidth = 5;
-                this.context.beginPath();
-                
-                // find co-ordinates
-                const angle = Math.PI/180*(360/this.vertices);
-                const _x = Math.floor(this.radius*Math.cos(angle));
-                const _y = Math.floor(this.radius*Math.sin(angle));
-
-                // draw asteroid
-                for(let i = 0; i < this.vertices; i++){
-                    this.context.rotate(angle);
-                    this.context.moveTo(this.radius, 0);
-                    this.context.lineTo(_x, _y);    
-                }
-
-                this.context.closePath();
-                this.context.stroke();
-
-                //restore the last saved context
-                this.context.restore();
-            }
-
-            this.move = function(){
-                this.x = Math.floor(this.x + this.speed*Math.sin(this.angle));
-                this.y = Math.floor(this.y - this.speed*Math.cos(this.angle));
-            }
-
-            // rotate the asteroid
-            this.rotate = function(){
-                this.angle += this.rotationFactor;
-            }
         }
 
         // Random int number between given range Math.floor(Math.random() * (max - min + 1)) + min;
@@ -613,6 +419,9 @@
             // set isGameOver to false
             isGameOver = false;
 
+            // reset highScore
+            highScore = getHighScore();
+
             // re-create ship
             ship = new Ship(canvas, canvas.width/2, canvas.height/2, 0);
 
@@ -624,7 +433,7 @@
             switch(event.keyCode){
                 case 32:
                     //space button
-                    ship.shoot(); 
+                    missiles.push(ship.shoot()); 
                     break;
                 case 37:
                     // left arrow key
