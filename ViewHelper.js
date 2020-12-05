@@ -38,25 +38,6 @@ function renderHighScore(canvas, context, highScore){
     context.fillText(textString, canvas.width - 200, 50);
 }
 
-// Render Game Over
-function renderGameOver(){
-
-    context.fillStyle = "white";
-    context.font = "bold 64pt Arial";
-
-    var gameOverTextString = `Game Over`;
-    var gameOverTextWidth = context.measureText(gameOverTextString).width;
-
-    context.fillText(gameOverTextString, (canvas.width/2) - (gameOverTextWidth/2), canvas.height/2 - 36);
-
-    var yourScoreTextString = `Your Score = ${score}`;
-    var yourScoreTextWidth = context.measureText(yourScoreTextString).width;
-
-    context.fillText(yourScoreTextString, (canvas.width/2) - (yourScoreTextWidth/2), canvas.height/2 + 36);
-
-    renderPlayAgain(context, false);
-}
-
 // Render Play Again
 function renderPlayAgain(context, isInside){
     
