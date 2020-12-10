@@ -9,13 +9,18 @@ class Ship {
         this.x = x;
         this.y = y;
         this.angle = angle;
-        this.minSpeed = 4;
-        this.maxSpeed = 32;
-        this.speed = this.minSpeed;
-
+        this.minSpeedFactor = 1;
+        this.maxSpeedFactor = 3;
+        this.speed = 0;
+        this.speedFactor = 0;
+        this.isMoving = false;
+        
         this.render = function () {
             // draw the ship at position x, y
             this.draw();
+
+            // update the ship co-ordinates
+            this.move();
         };
 
         // draw ship
@@ -63,13 +68,24 @@ class Ship {
 
         };
 
+        // mark ship as moving
         this.start = function () {
-            this.speed = this.speed + 2 <= this.maxSpeed ? this.speed + 2 : this.maxSpeed;
-            this.move();
+            this.isMoving = true;
         };
 
         //update x and y co-ordinate of ship
         this.move = function () {
+
+            // if ship is moving increase the speed of ship
+            if(this.isMoving){
+                this.speedFactor = this.speedFactor == 0 ? this.minSpeedFactor : this.speedFactor;
+                this.speedFactor = this.speedFactor + 0.2 < this.maxSpeedFactor ? this.speedFactor + 0.2 : this.maxSpeedFactor ;
+                this.speed = Math.pow(this.speedFactor, 3);
+            }
+            else{   // if ship is stopping decrease speed of ship
+                this.speedFactor = this.speedFactor - 0.1 > 0 ? this.speedFactor - 0.1 : 0 ;
+                this.speed = Math.pow(this.speedFactor, 3);
+            }
 
             const nextX = Math.floor(this.x + this.speed * Math.sin(this.angle));
             const nextY = Math.floor(this.y - this.speed * Math.cos(this.angle));
@@ -82,13 +98,9 @@ class Ship {
 
         };
 
+        // mark ship as not moving
         this.stop = function () {
-            while (this.speed <= this.minSpeed) {
-                this.speed = this.speed / 2;
-                this.x = Math.floor(this.x + this.speed * Math.sin(this.angle));
-                this.y = Math.floor(this.y - this.speed * Math.cos(this.angle));
-            }
-            this.speed = this.minSpeed;
+            this.isMoving = false;
         };
 
         // convert degree to radians
