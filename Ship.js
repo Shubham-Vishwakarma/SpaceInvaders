@@ -16,11 +16,13 @@ class Ship {
         this.isMoving = false;
         
         this.render = function () {
-            // draw the ship at position x, y
-            this.draw();
 
             // update the ship co-ordinates
             this.move();
+
+            // draw the ship at position x, y
+            this.draw();
+
         };
 
         // draw ship
