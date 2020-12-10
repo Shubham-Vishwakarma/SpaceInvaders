@@ -164,13 +164,20 @@
             this.x = x;
             this.y = y;
             this.angle = angle;
-            this.minSpeed = 4;
-            this.maxSpeed = 32;
-            this.speed = this.minSpeed;
+            this.minSpeedFactor = 1;
+            this.maxSpeedFactor = 3;
+            this.speed = 0;
+            this.speedFactor = 0;
+            this.isMoving = false;
 
             this.render = function(){
+
+                // update the ship co-ordinates
+                this.move();
+
                 // draw the ship at position x, y
                 this.draw();
+
             }
 
             // draw ship
@@ -187,7 +194,7 @@
                 this.context.beginPath();   // start drawing
                 this.context.moveTo(0, 0);  // move to origin
                 this.context.lineTo(20, 0); 
-                this.context.lineTo(0, -36); //height of equilateral triangle
+                this.context.lineTo(0, -35); //height of equilateral triangle
                 this.context.lineTo(-20, 0);
                 this.context.closePath();   //close the shape
                 this.context.fillStyle = "white";   //set fillstyle as white, since the background is black
@@ -217,25 +224,40 @@
 
             }
 
-            this.start = function(){
-                this.speed = this.speed + 2 <= this.maxSpeed ? this.speed + 2 : this.maxSpeed;
-                this.move();
-            }
+            // mark ship as moving
+            this.start = function () {
+                this.isMoving = true;
+            };
 
-            //update x and y co-ordinate of ship
-            this.move = function(){
-                this.x = Math.floor(this.x + this.speed*Math.sin(this.angle));
-                this.y = Math.floor(this.y - this.speed*Math.cos(this.angle));
-            }
+            // update x and y co-ordinate of ship
+            this.move = function () {
 
-            this.stop = function(){
-                while(this.speed <= this.minSpeed){
-                    this.speed = this.speed/2;
-                    this.x = Math.floor(this.x + this.speed*Math.sin(this.angle));
-                    this.y = Math.floor(this.y - this.speed*Math.cos(this.angle));
+                // if ship is moving increase the speed of ship
+                if(this.isMoving){
+                    this.speedFactor = this.speedFactor == 0 ? this.minSpeedFactor : this.speedFactor;
+                    this.speedFactor = this.speedFactor + 0.2 < this.maxSpeedFactor ? this.speedFactor + 0.2 : this.maxSpeedFactor ;
+                    this.speed = Math.pow(this.speedFactor, 3);
                 }
-                this.speed = this.minSpeed;
-            }
+                else{   // if ship is stopping decrease speed of ship
+                    this.speedFactor = this.speedFactor - 0.1 > 0 ? this.speedFactor - 0.1 : 0 ;
+                    this.speed = Math.pow(this.speedFactor, 3);
+                }
+
+                const nextX = Math.floor(this.x + this.speed * Math.sin(this.angle));
+                const nextY = Math.floor(this.y - this.speed * Math.cos(this.angle));
+
+                if (nextX > 0 && nextX < this.canvas.width &&
+                    nextY > 0 && nextY < this.canvas.height) {
+                    this.x = nextX;
+                    this.y = nextY;
+                }
+
+            };
+
+            // mark ship as not moving
+            this.stop = function () {
+                this.isMoving = false;
+            };
 
             // convert degree to radians
             this.rotate = function(dr){
