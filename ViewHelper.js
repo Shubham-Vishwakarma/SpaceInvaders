@@ -4,7 +4,7 @@ function renderMoveControl(canvas, context){
     context.textBaseAlign = "middle"
     context.textAlign = "center";
     context.fillStyle = "white";
-    context.fillText(`Use [ ↑ ]  [ ↓ ]  [ → ]  [ ← ] to move`, 200, canvas.height - 30);
+    context.fillText(`Use [ ↑ ]  [ → ]  [ ← ] to move`, 200, canvas.height - 30);
 }
 
 // Render How to Play Shoot Controls at bottom right of screen

@@ -233,6 +233,13 @@
 
         window.addEventListener('keydown', function(event){
             switch(event.keyCode){
+                case 13:
+                    // enter key
+                    if(isGameOver){
+                        isGameOver = false;
+                        resetGame();
+                    }
+                    break;
                 case 32:
                     //space button
                     missiles.push(ship.shoot()); 
