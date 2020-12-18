@@ -14,11 +14,16 @@ class Ship {
         this.speed = 0;
         this.speedFactor = 0;
         this.isMoving = false;
+        this.isLeftRotating = false;
+        this.isRightRotating = false;
         
         this.render = function () {
 
             // update the ship co-ordinates
             this.move();
+
+            // update the ship rotation
+            this.rotate();
 
             // draw the ship at position x, y
             this.draw();
@@ -106,9 +111,34 @@ class Ship {
         };
 
         // convert degree to radians
-        this.rotate = function (dr) {
-            this.angle = this.angle + Math.PI / 180 * dr;
+        this.rotate = function () {
+            if(this.isLeftRotating){
+                this.angle = this.angle - Math.PI / 180 * 10;
+            }
+            else if (this.isRightRotating){
+                this.angle = this.angle + Math.PI / 180 * 10;
+            }
         };
+
+        // start left rotating
+        this.startLeftRotate = function(){
+            this.isLeftRotating = true;
+        }
+
+        // stop left rotating
+        this.stopLeftRotate = function(){
+            this.isLeftRotating = false;
+        }
+
+        // start right rotating
+        this.startRightRotate = function(){
+            this.isRightRotating = true;
+        }
+
+        // stop right rotating
+        this.stopRightRotate = function(){
+            this.isRightRotating = false;
+        }
 
         this.shoot = function () {
             return new Missile(this.canvas, this.x, this.y, this.angle);

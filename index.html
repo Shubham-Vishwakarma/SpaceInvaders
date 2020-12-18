@@ -246,7 +246,7 @@
                     break;
                 case 37:
                     // left arrow key
-                    ship.rotate(-15);
+                    ship.startLeftRotate();
                     break;
                 case 38: 
                     // up arrow key
@@ -255,7 +255,7 @@
                     break;
                 case 39:
                     // right arrow key
-                    ship.rotate(15);
+                    ship.startRightRotate();
                     break;
                 case 40: 
                     // down arrow key
@@ -270,6 +270,7 @@
             switch(event.keyCode){
                 case 37:
                     // left arrow key
+                    ship.stopLeftRotate();
                     break;
                 case 38: 
                     // up arrow key
@@ -278,6 +279,7 @@
                     break;
                 case 39:
                     // right arrow key
+                    ship.stopRightRotate();
                     break;
                 case 40: 
                     break;
